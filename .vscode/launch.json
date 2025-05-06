@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+      {
+          "name": "Debug Project",
+          "type": "cppdbg",
+          "request": "launch",
+          "program": "${workspaceFolder}/build/robot_controls",
+          "args": [],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}",
+          "environment": [],
+          "externalConsole": false,
+          "MIMode": "lldb",
+          "miDebuggerPath": "/usr/bin/lldb",
+          "preLaunchTask": "Build Project"
+      }
+  ]
+}

@@ -1,0 +1,86 @@
+#pragma once
+
+#include "elements/cluster.hpp"
+#include "elements/construction_area.hpp"
+#include "elements/robot.hpp"
+#include "elements/enemy.hpp"
+#include "visualiser.hpp"
+#include "navigator.hpp"
+#include "locator.hpp"
+#include <vector>
+#include <string>
+
+using namespace std;
+using namespace cv;
+
+class Strategy {
+public:
+    enum class StrategyStatus {
+        IDLE,
+        DEPLOYING_FLAG,
+        FLAG_DEPLOYED,
+        COLLECTING_CLUSTER_1,
+        COLLECTED_CLUSTER_1,
+        COLLECTING_CLUSTER_2,
+        COLLECTED_CLUSTER_2,
+        CONSTRUCTION_GOING,
+        CONSTRUCTION_FINISHED,
+        GOING_BASE,
+        BASED,
+        ERROR_COLLECTING_CLUSTER,
+        ERROR_CONSTRUCTION,
+    };
+
+    Cluster* cluster1;
+    Cluster* cluster2;
+    Cluster* cluster3;
+    Cluster* cluster4;
+    Cluster* cluster5;
+    Cluster* cluster6;
+    Cluster* cluster7;
+    Cluster* cluster8;
+    Cluster* cluster9;
+    Cluster* cluster10;
+
+    ConstructionArea* constructionArea1;
+    ConstructionArea* constructionArea2;
+    ConstructionArea* constructionArea3;
+    ConstructionArea* constructionArea4;
+    ConstructionArea* constructionArea5;
+    ConstructionArea* constructionArea6;
+
+    Enemy* enemy;
+    Robot* robot;
+
+    Visualiser* visualiser;
+    Navigator* navigator;
+    Locator* locator;
+
+    bool flagDeployed = false;
+    float maxAccDistance = 50;
+
+    StrategyStatus currentStatus = StrategyStatus::IDLE;
+    StrategyStatus previousStatus = StrategyStatus::IDLE;
+
+    Strategy();
+
+    void start_test();
+    void updatePositions();
+    void changeStatus(StrategyStatus newStatus);
+    string strategyStatusToString(StrategyStatus status);
+
+private:
+    Cluster* targetCluster = nullptr;
+    Cluster* targetCluster1 = nullptr;
+    Cluster* targetCluster2 = nullptr;
+    ConstructionArea* targetConstructionArea = nullptr;
+
+    void setStatus(StrategyStatus newStatus);
+    void getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
+    void putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
+    vector<Cluster*> getAvailableClusters();
+    vector<ConstructionArea*> getAvailableConstructionAreas();
+    Cluster* getHighestPriorityCluster();
+    ConstructionArea* getHighestPriorityConstructionArea();
+    vector<Point2f> getPathToCluster(Cluster* cluster);
+};

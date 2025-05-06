@@ -1,0 +1,22 @@
+{
+  "configurations": [
+      {
+          "name": "Mac",
+          "includePath": [
+                    "${workspaceFolder}/include",
+                    "${workspaceFolder}/include/elements",
+                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/src/elements",
+                    "/opt/homebrew/include",
+                    "/opt/homebrew/include/opencv4",
+                    "${workspaceFolder}/**"
+                ],
+          "defines": [],
+          "compilerPath": "/opt/homebrew/bin/aarch64-apple-darwin24-g++-14",
+          "cStandard": "c11",
+          "cppStandard": "c++17",
+          "intelliSenseMode": "macos-gcc-arm64"
+      }
+  ],
+  "version": 4
+}
