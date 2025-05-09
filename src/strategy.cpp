@@ -30,21 +30,21 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
     while (true) {
         setStatus(continuingStatus);
         updatePositions();
-        targetCluster = getHighestPriorityCluster();
+        // targetCluster = getHighestPriorityCluster();
 
-        if (!targetCluster) {
-            setStatus(errorStatus);
-            continue;
-        }
+        // if (!targetCluster) {
+        //     setStatus(errorStatus);
+        //     continue;
+        // }
 
-        vector<Point2f> path = getPathToCluster(targetCluster);
-        visualiser->path = path;
+        // vector<Point2f> path = getPathToCluster(targetCluster);
+        // visualiser->path = path;
 
-        if (navigator->distanceFromPath(path) < maxAccDistance) {
-            targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
-            setStatus(completeStatus);
-            return;
-        }
+        // if (navigator->distanceFromPath(path) < maxAccDistance) {
+        //     targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+        //     setStatus(completeStatus);
+        //     return;
+        // }
 
         visualiser->drawImage();
         waitKey(1);

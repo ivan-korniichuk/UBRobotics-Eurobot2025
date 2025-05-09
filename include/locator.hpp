@@ -14,15 +14,17 @@ private:
     aruco::ArucoDetector detector;
     VideoCapture cap;
 
-    float stationaryMarkerSize = 100.0f;
+    // float stationaryMarkerSize = 100.0f;
+    // float movingMarker = 70.0f;
+    float stationaryMarkerSize = 83.0f;
     float movingMarker = 70.0f;
 
     vector<Point3f> realMPoints;
 
-    Point3f M20 = {2400, 1400, 0};
-    Point3f M21 = {600, 1400, 0};
-    Point3f M22 = {2400, 600, 0};
-    Point3f M23 = {600, 600, 0};
+    // Point3f M20 = {2400, 1400, 0};
+    // Point3f M21 = {600, 1400, 0};
+    // Point3f M22 = {2400, 600, 0};
+    // Point3f M23 = {600, 600, 0};
 
     Mat rodMain;
     Mat tvecMain;

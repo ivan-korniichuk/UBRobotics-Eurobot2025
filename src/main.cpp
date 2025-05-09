@@ -143,7 +143,7 @@ int main() {
     Enemy enemy(2, {350,1750}, Scalar(0,0,255), 200, ROBOT_RADIUS);
     enemy.locator = &locator;
 
-    Robot robot(6, {2650,1750}, Scalar(0,255,255), 200, ROBOT_RADIUS);
+    Robot robot(7, {2650,1750}, Scalar(0,255,255), 200, ROBOT_RADIUS);
     robot.locator = &locator;
     // Enemy(Point2f position, Scalar color, float size, float obstacleRadius = 0, string id = "Enemy") {
 
@@ -213,10 +213,11 @@ int main() {
     strategy.constructionArea5 = &constructionArea5;
     strategy.constructionArea6 = &constructionArea6;
 
-    visualiser.drawImage();
-
     waitKey(3000);
-    strategy.start_test();
+    // visualiser.drawImage();
+    locator.start(7);
+    // visualiser.drawImage();
+    // strategy.start_test();
     waitKey(0);
 
     return 0;

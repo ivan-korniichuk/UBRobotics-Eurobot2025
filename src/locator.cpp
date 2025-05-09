@@ -1,5 +1,7 @@
 #include "locator.hpp"
 
+#include <chrono>
+
 Locator::Locator() {
     FileStorage fs("camera_params.yml", FileStorage::READ);
     if (fs.isOpened()) {
@@ -15,11 +17,23 @@ Locator::Locator() {
     aruco::DetectorParameters parameters;
     detector = aruco::ArucoDetector(dictionary, parameters);
 
+    // realMPoints = {
+    //     {2400, 1400, 0},
+    //     {600, 1400, 0},
+    //     {2400, 600, 0},
+    //     {600, 600, 0}
+    // };
+    // realMPoints = {
+    //     {70, 60, 0},
+    //     {65, 695, 0},
+    //     {1335, 65, 0},
+    //     {1328, 694, 0}
+    // };
     realMPoints = {
-        {2400, 1400, 0},
-        {600, 1400, 0},
-        {2400, 600, 0},
-        {600, 600, 0}
+        {1218, 1230, 0},
+        {1216, 55, 0},
+        {140, 60, 0},
+        {142, 1230, 0}
     };
 
     cap.open(1);
@@ -71,12 +85,10 @@ Point2f Locator::find(int movingMarkerId) {
         markerDetected = false;
 
         if (!markerIds.empty()) {
-            drawMarkers(frame, markerCorners, markerIds);
-
             for (size_t i = 0; i < markerIds.size(); i++) {
                 int id = markerIds[i];
 
-                if (id >= 20 && id <= 23) {
+                if (id >= 0 && id <= 3) {
                     int mIndex = id % 20;
                     Point2f markerCenter = (markerCorners[i][0] + markerCorners[i][1] +
                                             markerCorners[i][2] + markerCorners[i][3]) / 4;
@@ -133,11 +145,11 @@ void Locator::start(int movingMarkerId) {
     vector<vector<Point2f>> markerCorners;
     vector<int> markerIds;
     vector<vector<Point2f>> rejectedCandidates;
-    vector<Point2f> imagePoints(4);
-    vector<bool> added(4, false);
-    Mat rvec, tvec, rvecMarker, tvecMarker;
 
-    vector<Point3f> realMarkerPoints = {
+    Mat rvecBoard, tvecBoard, R_board;
+    bool board_calibrated = false;
+
+    vector<Point3f> robotMarkerPoints = {
         {-movingMarker / 2, movingMarker / 2, 0},
         { movingMarker / 2, movingMarker / 2, 0},
         { movingMarker / 2, -movingMarker / 2, 0},
@@ -145,62 +157,64 @@ void Locator::start(int movingMarkerId) {
     };
 
     while (cap.read(frame)) {
+        auto startTime = std::chrono::high_resolution_clock::now();
         cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
-        detector.detectMarkers(frame, markerCorners, markerIds, rejectedCandidates);
+        detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
 
-        imagePoints.assign(4, Point2f());
-        added.assign(4, false);
-
-        bool markerDetected = false;
+        vector<Point2f> boardImagePoints;
+        vector<Point3f> boardRealPoints;
+        Mat rvecRobot, tvecRobot;
+        bool robotDetected = false;
 
         if (!markerIds.empty()) {
             drawMarkers(frame, markerCorners, markerIds);
 
+            // Separate board and robot markers
             for (size_t i = 0; i < markerIds.size(); i++) {
                 int id = markerIds[i];
 
-                if (id >= 20 && id <= 23) {
-                    int mIndex = id % 20;
-                    Point2f markerCenter = (markerCorners[i][0] + markerCorners[i][1] +
-                                            markerCorners[i][2] + markerCorners[i][3]) / 4;
-                    imagePoints[mIndex] = markerCenter;
-                    added[mIndex] = true;
+                if (id >= 0 && id <= 3) {
+                    // Collect stationary markers
+                    boardImagePoints.push_back(markerCorners[i][0]);
+                    boardRealPoints.push_back(realMPoints[id % 20]);
                 }
 
                 if (id == movingMarkerId) {
-                    markerDetected = true;
-                    solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker);
+                    // Detect robot marker position relative to camera
+                    robotDetected = solvePnP(robotMarkerPoints, markerCorners[i],
+                                             cameraMatrix, distCoeffs,
+                                             rvecRobot, tvecRobot, false, SOLVEPNP_IPPE_SQUARE);
                 }
             }
 
-            bool allInserted = all_of(added.begin(), added.end(), [](bool x) { return x; });
-            if (allInserted) {
-                bool success = solvePnP(realMPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
-                if (success) {
-                    Mat R;
-                    Rodrigues(rvec, R);
-                    Mat cameraPosition = -R.t() * tvec;
-                    cameraPosition.at<double>(2, 0) *= -1;
+            // Solve camera position using stationary markers each frame (essential!)
+            if (boardImagePoints.size() >= 4) {
+                bool boardFound = solvePnP(boardRealPoints, boardImagePoints,
+                                           cameraMatrix, distCoeffs,
+                                           rvecBoard, tvecBoard, false, SOLVEPNP_ITERATIVE);
 
-                    cout << "Camera Position:\nX: " << cameraPosition.at<double>(0, 0)
-                         << " Y: " << cameraPosition.at<double>(1, 0)
-                         << " Z: " << cameraPosition.at<double>(2, 0) << endl;
+                if (boardFound) {
+                    Rodrigues(rvecBoard, R_board); // Convert rotation vector to matrix
 
-                    if (markerDetected) {
-                        Mat R5;
-                        Rodrigues(rvecMarker, R5);
-                        Mat markerWorldPos = R.t() * (tvecMarker - tvec);
-                        markerWorldPos.at<double>(2, 0) *= -1;
+                    if (robotDetected) {
+                        // Now transform the robot's camera-relative position to global arena coordinates
+                        Mat robotPosWorld = R_board.t() * (tvecRobot - tvecBoard);
 
-                        cout << "Marker " << movingMarkerId << " Position:\nX: " << markerWorldPos.at<double>(0, 0)
-                             << " Y: " << markerWorldPos.at<double>(1, 0)
-                             << " Z: " << markerWorldPos.at<double>(2, 0) << endl;
+                        cout << "Robot Position (Arena frame): "
+                             << "X: " << robotPosWorld.at<double>(0)
+                             << " Y: " << robotPosWorld.at<double>(1)
+                             << " Z: " << robotPosWorld.at<double>(2) << endl;
                     }
                 }
             }
         }
+        auto endTime = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> elapsed = endTime - startTime;
+        double ms = elapsed.count() * 1000.0;
+        double fps = 1.0 / elapsed.count();
 
+        std::cout << "Time per iteration: " << ms << " ms | FPS: " << fps << std::endl;
         imshow("Frame", frame);
-        if (waitKey(35) >= 0) break;
+        waitKey(1);
     }
 }

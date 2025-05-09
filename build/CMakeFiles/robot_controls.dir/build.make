@@ -76,141 +76,141 @@ CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o: CMakeFiles/robot_contr
 CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp
 CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp"
 
 CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp" > CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp" > CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.i
 
 CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp" -o CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp" -o CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.s
 
 CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp
 CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp"
 
 CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp" > CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp" > CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.i
 
 CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp" -o CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp" -o CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.s
 
 CMakeFiles/robot_controls.dir/src/elements/element.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/elements/element.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp
 CMakeFiles/robot_controls.dir/src/elements/element.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/robot_controls.dir/src/elements/element.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/element.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/element.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/element.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/element.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/element.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/element.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp"
 
 CMakeFiles/robot_controls.dir/src/elements/element.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/elements/element.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp" > CMakeFiles/robot_controls.dir/src/elements/element.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp" > CMakeFiles/robot_controls.dir/src/elements/element.cpp.i
 
 CMakeFiles/robot_controls.dir/src/elements/element.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/elements/element.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp" -o CMakeFiles/robot_controls.dir/src/elements/element.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp" -o CMakeFiles/robot_controls.dir/src/elements/element.cpp.s
 
 CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp
 CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp"
 
 CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp" > CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp" > CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.i
 
 CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp" -o CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/enemy.cpp" -o CMakeFiles/robot_controls.dir/src/elements/enemy.cpp.s
 
 CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp
 CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o -MF CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o.d -o CMakeFiles/robot_controls.dir/src/elements/robot.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp"
 
 CMakeFiles/robot_controls.dir/src/elements/robot.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/elements/robot.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp" > CMakeFiles/robot_controls.dir/src/elements/robot.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp" > CMakeFiles/robot_controls.dir/src/elements/robot.cpp.i
 
 CMakeFiles/robot_controls.dir/src/elements/robot.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/elements/robot.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp" -o CMakeFiles/robot_controls.dir/src/elements/robot.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/robot.cpp" -o CMakeFiles/robot_controls.dir/src/elements/robot.cpp.s
 
 CMakeFiles/robot_controls.dir/src/locator.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/locator.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/locator.cpp
 CMakeFiles/robot_controls.dir/src/locator.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/robot_controls.dir/src/locator.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/locator.cpp.o -MF CMakeFiles/robot_controls.dir/src/locator.cpp.o.d -o CMakeFiles/robot_controls.dir/src/locator.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/locator.cpp.o -MF CMakeFiles/robot_controls.dir/src/locator.cpp.o.d -o CMakeFiles/robot_controls.dir/src/locator.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp"
 
 CMakeFiles/robot_controls.dir/src/locator.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/locator.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp" > CMakeFiles/robot_controls.dir/src/locator.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp" > CMakeFiles/robot_controls.dir/src/locator.cpp.i
 
 CMakeFiles/robot_controls.dir/src/locator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/locator.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp" -o CMakeFiles/robot_controls.dir/src/locator.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/locator.cpp" -o CMakeFiles/robot_controls.dir/src/locator.cpp.s
 
 CMakeFiles/robot_controls.dir/src/main.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/main.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/main.cpp
 CMakeFiles/robot_controls.dir/src/main.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/robot_controls.dir/src/main.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/main.cpp.o -MF CMakeFiles/robot_controls.dir/src/main.cpp.o.d -o CMakeFiles/robot_controls.dir/src/main.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/main.cpp.o -MF CMakeFiles/robot_controls.dir/src/main.cpp.o.d -o CMakeFiles/robot_controls.dir/src/main.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp"
 
 CMakeFiles/robot_controls.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/main.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp" > CMakeFiles/robot_controls.dir/src/main.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp" > CMakeFiles/robot_controls.dir/src/main.cpp.i
 
 CMakeFiles/robot_controls.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/main.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp" -o CMakeFiles/robot_controls.dir/src/main.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/main.cpp" -o CMakeFiles/robot_controls.dir/src/main.cpp.s
 
 CMakeFiles/robot_controls.dir/src/navigator.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/navigator.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/navigator.cpp
 CMakeFiles/robot_controls.dir/src/navigator.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/robot_controls.dir/src/navigator.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/navigator.cpp.o -MF CMakeFiles/robot_controls.dir/src/navigator.cpp.o.d -o CMakeFiles/robot_controls.dir/src/navigator.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/navigator.cpp.o -MF CMakeFiles/robot_controls.dir/src/navigator.cpp.o.d -o CMakeFiles/robot_controls.dir/src/navigator.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp"
 
 CMakeFiles/robot_controls.dir/src/navigator.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/navigator.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp" > CMakeFiles/robot_controls.dir/src/navigator.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp" > CMakeFiles/robot_controls.dir/src/navigator.cpp.i
 
 CMakeFiles/robot_controls.dir/src/navigator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/navigator.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp" -o CMakeFiles/robot_controls.dir/src/navigator.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/navigator.cpp" -o CMakeFiles/robot_controls.dir/src/navigator.cpp.s
 
 CMakeFiles/robot_controls.dir/src/strategy.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/strategy.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/strategy.cpp
 CMakeFiles/robot_controls.dir/src/strategy.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/robot_controls.dir/src/strategy.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/strategy.cpp.o -MF CMakeFiles/robot_controls.dir/src/strategy.cpp.o.d -o CMakeFiles/robot_controls.dir/src/strategy.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/strategy.cpp.o -MF CMakeFiles/robot_controls.dir/src/strategy.cpp.o.d -o CMakeFiles/robot_controls.dir/src/strategy.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp"
 
 CMakeFiles/robot_controls.dir/src/strategy.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/strategy.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp" > CMakeFiles/robot_controls.dir/src/strategy.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp" > CMakeFiles/robot_controls.dir/src/strategy.cpp.i
 
 CMakeFiles/robot_controls.dir/src/strategy.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/strategy.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp" -o CMakeFiles/robot_controls.dir/src/strategy.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/strategy.cpp" -o CMakeFiles/robot_controls.dir/src/strategy.cpp.s
 
 CMakeFiles/robot_controls.dir/src/visualiser.cpp.o: CMakeFiles/robot_controls.dir/flags.make
 CMakeFiles/robot_controls.dir/src/visualiser.cpp.o: /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp
 CMakeFiles/robot_controls.dir/src/visualiser.cpp.o: CMakeFiles/robot_controls.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles" --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/robot_controls.dir/src/visualiser.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/visualiser.cpp.o -MF CMakeFiles/robot_controls.dir/src/visualiser.cpp.o.d -o CMakeFiles/robot_controls.dir/src/visualiser.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp"
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/robot_controls.dir/src/visualiser.cpp.o -MF CMakeFiles/robot_controls.dir/src/visualiser.cpp.o.d -o CMakeFiles/robot_controls.dir/src/visualiser.cpp.o -c "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp"
 
 CMakeFiles/robot_controls.dir/src/visualiser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/robot_controls.dir/src/visualiser.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp" > CMakeFiles/robot_controls.dir/src/visualiser.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp" > CMakeFiles/robot_controls.dir/src/visualiser.cpp.i
 
 CMakeFiles/robot_controls.dir/src/visualiser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/robot_controls.dir/src/visualiser.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp" -o CMakeFiles/robot_controls.dir/src/visualiser.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/visualiser.cpp" -o CMakeFiles/robot_controls.dir/src/visualiser.cpp.s
 
 # Object files for target robot_controls
 robot_controls_OBJECTS = \
