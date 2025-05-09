@@ -215,9 +215,9 @@ int main() {
 
     waitKey(3000);
     // visualiser.drawImage();
-    locator.start(7);
-    // visualiser.drawImage();
-    // strategy.start_test();
+    // locator.start(7);
+    visualiser.drawImage();
+    strategy.start_test();
     waitKey(0);
 
     return 0;

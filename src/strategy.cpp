@@ -3,17 +3,51 @@
 Strategy::Strategy() {}
 
 void Strategy::start_test() {
+    startAsyncPositionUpdates();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
         getCluster(StrategyStatus::COLLECTING_CLUSTER_1, StrategyStatus::COLLECTED_CLUSTER_1, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         getCluster(StrategyStatus::COLLECTING_CLUSTER_2, StrategyStatus::COLLECTED_CLUSTER_2, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         putCluster(StrategyStatus::CONSTRUCTION_GOING, StrategyStatus::CONSTRUCTION_FINISHED, StrategyStatus::ERROR_CONSTRUCTION);
     }
+    stopAsyncPositionUpdates();
 }
 
 void Strategy::updatePositions() {
     robot->update();
     enemy->update();
+}
+
+void Strategy::startAsyncPositionUpdates() {
+    cap.open(1);  // Moved from Locator
+    if (!cap.isOpened()) {
+        cerr << "Error: Could not open the camera!" << endl;
+        exit(-1);
+    }
+
+    running = true;
+
+    positionThread = std::thread([this]() {
+        Mat frame;
+        while (running) {
+            cap.read(frame);
+
+            Point2f robotPos = locator->find(robot->getMarkerId(), frame);
+            Point2f enemyPos = locator->find(enemy->getMarkerId(), frame);
+
+            robot->setPosition(robotPos);
+            enemy->setPosition(enemyPos);
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        }
+    });
+}
+
+void Strategy::stopAsyncPositionUpdates() {
+    running = false;
+    if (cameraThread.joinable()) cameraThread.join();
+    if (positionThread.joinable()) positionThread.join();
+    cap.release();
 }
 
 void Strategy::changeStatus(StrategyStatus newStatus) {
@@ -30,21 +64,21 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
     while (true) {
         setStatus(continuingStatus);
         updatePositions();
-        // targetCluster = getHighestPriorityCluster();
+        targetCluster = getHighestPriorityCluster();
 
-        // if (!targetCluster) {
-        //     setStatus(errorStatus);
-        //     continue;
-        // }
+        if (!targetCluster) {
+            setStatus(errorStatus);
+            continue;
+        }
 
-        // vector<Point2f> path = getPathToCluster(targetCluster);
-        // visualiser->path = path;
+        vector<Point2f> path = getPathToCluster(targetCluster);
+        visualiser->path = path;
 
-        // if (navigator->distanceFromPath(path) < maxAccDistance) {
-        //     targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
-        //     setStatus(completeStatus);
-        //     return;
-        // }
+        if (navigator->distanceFromPath(path) < maxAccDistance) {
+            targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+            setStatus(completeStatus);
+            return;
+        }
 
         visualiser->drawImage();
         waitKey(1);
@@ -54,7 +88,7 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
 void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
     while (true) {
         setStatus(continuingStatus);
-        updatePositions();
+        // updatePositions();
         targetConstructionArea = getHighestPriorityConstructionArea();
 
         if (!targetConstructionArea) {

@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
+#include <mutex>
 
 using namespace cv;
 using namespace std;
@@ -14,6 +15,7 @@ private:
     vector<Point2f> dimensions;
     Point2f position;
     int markerId;
+    mutable mutex posMutex;
 
 public:
     Locator* locator;
@@ -24,4 +26,5 @@ public:
     void setPosition(Point2f position);
     Point2f getPosition() const;
     void update();
+    int getMarkerId() const;
 };

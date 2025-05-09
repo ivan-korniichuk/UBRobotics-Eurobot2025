@@ -61,83 +61,116 @@ Point2f Locator::find(int movingMarkerId) {
     vector<vector<Point2f>> markerCorners;
     vector<int> markerIds;
     vector<vector<Point2f>> rejectedCandidates;
-    vector<Point2f> imagePoints(4);
-    vector<bool> added(4, false);
-    Mat rvec, tvec, R;
-    Mat rvecMarker, tvecMarker;
-    bool success = false, markerDetected = false;
-    int fails = 0;
 
-    vector<Point3f> realMarkerPoints = {
+    Mat rvecBoard, tvecBoard, R_board;
+
+    vector<Point3f> robotMarkerPoints = {
         {-movingMarker / 2, movingMarker / 2, 0},
         { movingMarker / 2, movingMarker / 2, 0},
         { movingMarker / 2, -movingMarker / 2, 0},
         {-movingMarker / 2, -movingMarker / 2, 0}
     };
 
-    while (rodMain.empty() || !markerDetected || (!success && fails < 1)) {
-        cap.read(frame);
+    // Only attempt a single frame read per call
+    if (cap.read(frame)) {
         cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
-        detector.detectMarkers(frame, markerCorners, markerIds, rejectedCandidates);
+        detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
 
-        imagePoints.assign(4, Point2f());
-        added.assign(4, false);
-        markerDetected = false;
+        vector<Point2f> boardImagePoints;
+        vector<Point3f> boardRealPoints;
+        Mat rvecRobot, tvecRobot;
+        bool robotDetected = false;
 
         if (!markerIds.empty()) {
             for (size_t i = 0; i < markerIds.size(); i++) {
                 int id = markerIds[i];
 
                 if (id >= 0 && id <= 3) {
-                    int mIndex = id % 20;
-                    Point2f markerCenter = (markerCorners[i][0] + markerCorners[i][1] +
-                                            markerCorners[i][2] + markerCorners[i][3]) / 4;
-                    imagePoints[mIndex] = markerCenter;
-                    added[mIndex] = true;
+                    boardImagePoints.push_back(markerCorners[i][0]);
+                    boardRealPoints.push_back(realMPoints[id]);
                 }
 
                 if (id == movingMarkerId) {
-                    markerDetected = true;
-                    solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker);
+                    robotDetected = solvePnP(robotMarkerPoints, markerCorners[i],
+                                             cameraMatrix, distCoeffs,
+                                             rvecRobot, tvecRobot, false, SOLVEPNP_IPPE_SQUARE);
                 }
             }
 
-            bool allInserted = all_of(added.begin(), added.end(), [](bool x) { return x; });
+            if (boardImagePoints.size() >= 4 && robotDetected) {
+                bool boardFound = solvePnP(boardRealPoints, boardImagePoints,
+                                           cameraMatrix, distCoeffs,
+                                           rvecBoard, tvecBoard, false, SOLVEPNP_ITERATIVE);
 
-            if (allInserted) {
-                success = solvePnP(realMPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
-                if (success) {
-                    Rodrigues(rvec, R);
-                    if (rodMain.empty()) {
-                        rodMain = R;
-                        tvecMain = tvec;
-                    }
-
-                    Mat cameraPosition = -R.t() * tvec;
-                    cameraPosition.at<double>(2, 0) *= -1;
-
-                    cout << "Camera Position:\nX: " << cameraPosition.at<double>(0, 0)
-                         << " Y: " << cameraPosition.at<double>(1, 0)
-                         << " Z: " << cameraPosition.at<double>(2, 0) << endl;
+                if (boardFound) {
+                    Rodrigues(rvecBoard, R_board);
+                    Mat robotPosWorld = R_board.t() * (tvecRobot - tvecBoard);
+                    float x = static_cast<float>(robotPosWorld.at<double>(0));
+                    float y = static_cast<float>(robotPosWorld.at<double>(1));
+                    return Point2f(x, y);
                 }
             }
-
-            fails++;
         }
-
-        if (waitKey(35) >= 0) break;
     }
 
-    Mat R5;
-    Rodrigues(rvecMarker, R5);
-    Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
-    markerWorldPos.at<double>(2, 0) *= -1;
+    // Return invalid position if something fails
+    return Point2f(-1, -1);
+}
 
-    cout << "Marker " << movingMarkerId << " Position:\nX: " << markerWorldPos.at<double>(0, 0)
-         << " Y: " << markerWorldPos.at<double>(1, 0)
-         << " Z: " << markerWorldPos.at<double>(2, 0) << endl;
+Point2f Locator::find(int markerId, const Mat& frame) {
+    Mat grayFrame;
+    vector<vector<Point2f>> markerCorners;
+    vector<int> markerIds;
+    vector<vector<Point2f>> rejectedCandidates;
+    Mat rvecBoard, tvecBoard, R_board;
 
-    return Point2f(markerWorldPos.at<double>(0, 0), markerWorldPos.at<double>(1, 0));
+    vector<Point3f> markerModel = {
+        {-movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, -movingMarker / 2, 0},
+        {-movingMarker / 2, -movingMarker / 2, 0}
+    };
+
+    if (frame.empty()) return {-1, -1};
+
+    cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+    detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
+
+    vector<Point2f> boardImagePoints;
+    vector<Point3f> boardRealPoints;
+    Mat rvec, tvec;
+    bool markerFound = false;
+
+    for (size_t i = 0; i < markerIds.size(); ++i) {
+        int id = markerIds[i];
+
+        if (id >= 0 && id <= 3) {
+            boardImagePoints.push_back(markerCorners[i][0]);
+            boardRealPoints.push_back(realMPoints[id]);
+        }
+
+        if (id == markerId) {
+            markerFound = solvePnP(markerModel, markerCorners[i], cameraMatrix, distCoeffs, rvec, tvec, false, SOLVEPNP_IPPE_SQUARE);
+        }
+    }
+
+    bool boardSolved = false;
+    if (boardImagePoints.size() >= 4) {
+        boardSolved = solvePnP(boardRealPoints, boardImagePoints, cameraMatrix, distCoeffs, rvecBoard, tvecBoard, false, SOLVEPNP_ITERATIVE);
+        if (boardSolved) {
+            Rodrigues(rvecBoard, R_board);
+            lastRBoard = R_board.clone();
+            lastTBoard = tvecBoard.clone();
+            hasValidBoardPose = true;
+        }
+    }
+    
+    if (markerFound && hasValidBoardPose) {
+        Mat pos = lastRBoard.t() * (tvec - lastTBoard);
+        return Point2f(static_cast<float>(pos.at<double>(0)), static_cast<float>(pos.at<double>(1)));
+    }
+
+    return {-1, -1};
 }
 
 void Locator::start(int movingMarkerId) {
@@ -147,7 +180,6 @@ void Locator::start(int movingMarkerId) {
     vector<vector<Point2f>> rejectedCandidates;
 
     Mat rvecBoard, tvecBoard, R_board;
-    bool board_calibrated = false;
 
     vector<Point3f> robotMarkerPoints = {
         {-movingMarker / 2, movingMarker / 2, 0},

@@ -9,6 +9,9 @@
 #include "locator.hpp"
 #include <vector>
 #include <string>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 using namespace std;
 using namespace cv;
@@ -68,6 +71,8 @@ public:
     void updatePositions();
     void changeStatus(StrategyStatus newStatus);
     string strategyStatusToString(StrategyStatus status);
+    void startAsyncPositionUpdates();
+    void stopAsyncPositionUpdates();
 
 private:
     Cluster* targetCluster = nullptr;
@@ -83,4 +88,10 @@ private:
     Cluster* getHighestPriorityCluster();
     ConstructionArea* getHighestPriorityConstructionArea();
     vector<Point2f> getPathToCluster(Cluster* cluster);
+    atomic<bool> running;
+    VideoCapture cap;
+    Mat sharedFrame;
+    mutex cameraMutex;
+    thread cameraThread;
+    thread positionThread;
 };

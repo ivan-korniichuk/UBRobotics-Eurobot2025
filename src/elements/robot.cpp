@@ -24,6 +24,8 @@ void Robot::drawElement(Mat& image) {
 }
 
 void Robot::setPosition(Point2f position) {
+    if (position == Point2f(-1, -1)) return;
+    lock_guard<mutex> lock(posMutex);
     vector<Point2f> border = dimensions;
     for (Point2f &point : border) {
         point.x += position.x;
@@ -35,10 +37,15 @@ void Robot::setPosition(Point2f position) {
 }
 
 Point2f Robot::getPosition() const {
+    lock_guard<mutex> lock(posMutex);
     return position;
 }
 
 void Robot::update() {
     Point2f newPosition = locator->find(markerId);
     setPosition(newPosition);
+}
+
+int Robot::getMarkerId() const {
+    return markerId;
 }

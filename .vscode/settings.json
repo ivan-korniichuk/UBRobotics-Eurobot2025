@@ -70,6 +70,7 @@
     "stop_token": "cpp",
     "system_error": "cpp",
     "text_encoding": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "shared_mutex": "cpp"
   }
 }
