@@ -5,7 +5,7 @@ Visualiser::Visualiser(int height, int width, Scalar color) {
     this->defaultMat = color;
 }
 
-void Visualiser::drawImage() {
+void Visualiser::updateFrame() {
     Mat imgCopy = defaultMat.clone();
 
     enemy->drawElement(imgCopy);
@@ -54,6 +54,14 @@ void Visualiser::drawImage() {
         line(imgCopy, p1, p2, Scalar(255, 255, 255), 5, LINE_AA);
     }
 
-    imshow("VISUALISER", imgCopy);
-    waitKey(1);
+    lock_guard<mutex> lock(frameMutex);
+    latestFrame = imgCopy;
+}
+
+void Visualiser::drawImage() {
+    std::lock_guard<std::mutex> lock(frameMutex);
+    if (!latestFrame.empty()) {
+        imshow("VISUALISER", latestFrame);
+        waitKey(1);
+    }
 }

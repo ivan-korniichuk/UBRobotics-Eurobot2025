@@ -44,3 +44,7 @@ void Enemy::update() {
 int Enemy::getMarkerId() const {
     return markerId;
 }
+
+void Enemy::setMarkerId(int markerId) {
+    this->markerId = markerId;
+}

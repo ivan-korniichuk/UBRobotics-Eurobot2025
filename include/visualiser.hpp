@@ -56,6 +56,10 @@ public:
 
     vector<Point2f> path = {};
 
+    Mat latestFrame;
+    mutex frameMutex;
+
     Visualiser(int height, int width, Scalar color = Scalar(60, 60, 30));
+    void updateFrame();
     void drawImage();
 };

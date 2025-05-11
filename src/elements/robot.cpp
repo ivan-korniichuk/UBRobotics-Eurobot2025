@@ -49,3 +49,7 @@ void Robot::update() {
 int Robot::getMarkerId() const {
     return markerId;
 }
+
+void Robot::setMarkerId(int markerId) {
+    this->markerId = markerId;
+}

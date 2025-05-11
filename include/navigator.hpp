@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <limits>
+#include "elements/enemy.hpp"
 
 using namespace std;
 using namespace cv;
@@ -20,6 +21,7 @@ private:
 
 public:
     Navigator(Rect boundary);
+    Enemy *enemy;
 
     void setClusters(vector<Cluster*> clusters);
     void setConstructionAreas(vector<ConstructionArea*> constructionAreas);

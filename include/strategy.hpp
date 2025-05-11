@@ -61,9 +61,12 @@ public:
 
     bool flagDeployed = false;
     float maxAccDistance = 50;
+    vector<Point2f> targetPath = {};
 
     StrategyStatus currentStatus = StrategyStatus::IDLE;
     StrategyStatus previousStatus = StrategyStatus::IDLE;
+
+    mutex visualiserMutex;
 
     Strategy();
 
@@ -80,6 +83,8 @@ private:
     Cluster* targetCluster2 = nullptr;
     ConstructionArea* targetConstructionArea = nullptr;
 
+    void setTargetPath(vector<Point2f> path);
+    void setTargetPath();
     void setStatus(StrategyStatus newStatus);
     void getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
     void putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
@@ -88,10 +93,14 @@ private:
     Cluster* getHighestPriorityCluster();
     ConstructionArea* getHighestPriorityConstructionArea();
     vector<Point2f> getPathToCluster(Cluster* cluster);
+    Cluster* getClosestCluster(const Point2f& fromPoint);
+    ConstructionArea* getClosestConstructionArea(const Point2f& fromPoint);
     atomic<bool> running;
     VideoCapture cap;
     Mat sharedFrame;
     mutex cameraMutex;
     thread cameraThread;
     thread positionThread;
+    thread visualiserThread;
+    atomic<bool> visualiserRunning;
 };

@@ -26,4 +26,5 @@ public:
     void setPosition(Point2f position);
     void update();
     int getMarkerId() const;
+    void setMarkerId(int markerId);
 };

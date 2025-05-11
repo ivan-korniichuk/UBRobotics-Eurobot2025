@@ -129,6 +129,30 @@ robot_controls/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/robot_controls.dir/build.make CMakeFiles/robot_controls.dir/build
 .PHONY : robot_controls/fast
 
+src/config.o: src/config.cpp.o
+.PHONY : src/config.o
+
+# target to build an object file
+src/config.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/robot_controls.dir/build.make CMakeFiles/robot_controls.dir/src/config.cpp.o
+.PHONY : src/config.cpp.o
+
+src/config.i: src/config.cpp.i
+.PHONY : src/config.i
+
+# target to preprocess a source file
+src/config.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/robot_controls.dir/build.make CMakeFiles/robot_controls.dir/src/config.cpp.i
+.PHONY : src/config.cpp.i
+
+src/config.s: src/config.cpp.s
+.PHONY : src/config.s
+
+# target to generate assembly for a file
+src/config.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/robot_controls.dir/build.make CMakeFiles/robot_controls.dir/src/config.cpp.s
+.PHONY : src/config.cpp.s
+
 src/elements/cluster.o: src/elements/cluster.cpp.o
 .PHONY : src/elements/cluster.o
 
@@ -378,6 +402,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... robot_controls"
+	@echo "... src/config.o"
+	@echo "... src/config.i"
+	@echo "... src/config.s"
 	@echo "... src/elements/cluster.o"
 	@echo "... src/elements/cluster.i"
 	@echo "... src/elements/cluster.s"

@@ -26,6 +26,7 @@ void Strategy::startAsyncPositionUpdates() {
     }
 
     running = true;
+    visualiserRunning = true;
 
     positionThread = std::thread([this]() {
         Mat frame;
@@ -38,15 +39,28 @@ void Strategy::startAsyncPositionUpdates() {
             robot->setPosition(robotPos);
             enemy->setPosition(enemyPos);
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        }
+    });
+
+    visualiserThread = thread([this]() {
+        while (visualiserRunning) {
+            {
+                lock_guard<mutex> lock(visualiserMutex);
+                visualiser->updateFrame();
+            }
+            this_thread::sleep_for(chrono::milliseconds(15));
         }
     });
 }
 
 void Strategy::stopAsyncPositionUpdates() {
     running = false;
-    if (cameraThread.joinable()) cameraThread.join();
+    visualiserRunning = false;
+
     if (positionThread.joinable()) positionThread.join();
+    if (visualiserThread.joinable()) visualiserThread.join();
+
     cap.release();
 }
 
@@ -60,28 +74,63 @@ void Strategy::setStatus(StrategyStatus newStatus) {
     currentStatus = newStatus;
 }
 
+void Strategy::setTargetPath(vector<Point2f> path) {
+    if (path.size() > 1) {
+        targetPath = path;
+    }
+
+    setTargetPath();
+}
+void Strategy::setTargetPath() {
+    if (targetPath.size() > 1) {
+        targetPath[0] = robot->getPosition();
+        lock_guard<mutex> lock(visualiserMutex);
+        visualiser->path = targetPath;
+    }
+}
+
 void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
     while (true) {
         setStatus(continuingStatus);
-        updatePositions();
+        // updatePositions();
         targetCluster = getHighestPriorityCluster();
 
-        if (!targetCluster) {
-            setStatus(errorStatus);
-            continue;
+        // if (!targetCluster) {
+        //     setStatus(errorStatus);
+        //     setTargetPath();
+        //     continue;
+        // }
+
+        // vector<Point2f> path = getPathToCluster(targetCluster);
+        // setTargetPath(path);
+        // if (path.size() > 0) {
+        //     lock_guard<mutex> lock(visualiserMutex);
+        //     visualiser->path = path;
+        // }
+
+        if (targetCluster) {
+            vector<Point2f> path = getPathToCluster(targetCluster);
+            setTargetPath(path);
+        } else {
+            setTargetPath();
         }
 
-        vector<Point2f> path = getPathToCluster(targetCluster);
-        visualiser->path = path;
+        float dist = navigator->distanceFromPath(targetPath);
 
-        if (navigator->distanceFromPath(path) < maxAccDistance) {
-            targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+        if (dist > 0 && dist < maxAccDistance) {
+            if (targetCluster) {
+                targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+            } else {
+                getClosestCluster(robot->getPosition())->setStatus(Cluster::ClusterStatus::TAKEN);
+            }
             setStatus(completeStatus);
             return;
         }
 
-        visualiser->drawImage();
-        waitKey(1);
+        // {
+        //     lock_guard<mutex> lock(visualiserMutex);
+        //     visualiser->drawImage();
+        // }
     }
 }
 
@@ -91,22 +140,36 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
         // updatePositions();
         targetConstructionArea = getHighestPriorityConstructionArea();
 
-        if (!targetConstructionArea) {
-            setStatus(errorStatus);
-            continue;
+        // if (!targetConstructionArea) {
+        //     setStatus(errorStatus);
+        //     setTargetPath();
+        //     continue;
+        // }
+
+        if (targetConstructionArea) {
+            vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->getAccessPoint());
+            setTargetPath(path);
+        } else {
+            setTargetPath();
         }
 
-        vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->getAccessPoint());
-        visualiser->path = path;
+        float dist = navigator->distanceFromPath(targetPath);
 
-        if (navigator->distanceFromPath(path) < maxAccDistance) {
+        if (dist > 0 && dist < maxAccDistance) {
+            if (targetConstructionArea) {
+                targetConstructionArea->built = true;
+            } else {
+                getClosestConstructionArea(robot->getPosition())->built = true;
+            }
             targetConstructionArea->built = true;
             setStatus(completeStatus);
             return;
         }
 
-        visualiser->drawImage();
-        waitKey(1);
+        // {
+        //     lock_guard<mutex> lock(visualiserMutex);
+        //     visualiser->drawImage();
+        // }
     }
 }
 
@@ -178,6 +241,39 @@ vector<Point2f> Strategy::getPathToCluster(Cluster* cluster) {
     if (dist2 != -1) return path2;
 
     return {};
+}
+
+Cluster* Strategy::getClosestCluster(const Point2f& fromPoint) {
+    Cluster* closest = nullptr;
+    float minDist = std::numeric_limits<float>::max();
+
+    for (Cluster* cluster : getAvailableClusters()) {
+        // Check both access points
+        for (int i = 0; i < 2; ++i) {
+            float dist = norm(fromPoint - cluster->getAccessPoint(i));
+            if (dist < minDist) {
+                minDist = dist;
+                closest = cluster;
+            }
+        }
+    }
+
+    return closest;
+}
+
+ConstructionArea* Strategy::getClosestConstructionArea(const Point2f& fromPoint) {
+    ConstructionArea* closest = nullptr;
+    float minDist = std::numeric_limits<float>::max();
+
+    for (ConstructionArea* area : getAvailableConstructionAreas()) {
+        float dist = norm(fromPoint - area->getAccessPoint());
+        if (dist < minDist) {
+            minDist = dist;
+            closest = area;
+        }
+    }
+
+    return closest;
 }
 
 string Strategy::strategyStatusToString(StrategyStatus status) {

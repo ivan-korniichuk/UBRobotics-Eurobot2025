@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/config.cpp" "CMakeFiles/robot_controls.dir/src/config.cpp.o" "gcc" "CMakeFiles/robot_controls.dir/src/config.cpp.o.d"
   "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/cluster.cpp" "CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o" "gcc" "CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o.d"
   "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/construction_area.cpp" "CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o" "gcc" "CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o.d"
   "/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/src/elements/element.cpp" "CMakeFiles/robot_controls.dir/src/elements/element.cpp.o" "gcc" "CMakeFiles/robot_controls.dir/src/elements/element.cpp.o.d"
