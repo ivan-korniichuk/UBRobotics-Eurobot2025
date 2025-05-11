@@ -95,6 +95,8 @@ private:
     vector<Point2f> getPathToCluster(Cluster* cluster);
     Cluster* getClosestCluster(const Point2f& fromPoint);
     ConstructionArea* getClosestConstructionArea(const Point2f& fromPoint);
+    float getTargetPathDistance() const;
+    float getDistance(Point2f start, Point2f end) const;
     atomic<bool> running;
     VideoCapture cap;
     Mat sharedFrame;
