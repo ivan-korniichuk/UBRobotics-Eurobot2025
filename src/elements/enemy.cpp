@@ -24,6 +24,8 @@ void Enemy::drawElement(Mat& image) {
 }
 
 void Enemy::setPosition(Point2f position) {
+    if (position == Point2f(-1, -1)) return;
+    lock_guard<mutex> lock(posMutex);
     vector<Point2f> border = dimensions;
     for (Point2f &point : border) {
         point.x += position.x;
@@ -37,4 +39,12 @@ void Enemy::setPosition(Point2f position) {
 void Enemy::update() {
     Point2f newPosition = locator->find(markerId);
     setPosition(newPosition);
+}
+
+int Enemy::getMarkerId() const {
+    return markerId;
+}
+
+void Enemy::setMarkerId(int markerId) {
+    this->markerId = markerId;
 }

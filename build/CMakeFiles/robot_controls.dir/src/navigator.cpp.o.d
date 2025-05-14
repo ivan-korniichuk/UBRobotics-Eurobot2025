@@ -1102,4 +1102,8 @@ CMakeFiles/robot_controls.dir/src/navigator.cpp.o: \
   /opt/homebrew/Cellar/opencv/4.11.0_1/include/opencv4/opencv2/video/tracking.hpp \
   /opt/homebrew/Cellar/opencv/4.11.0_1/include/opencv4/opencv2/video/background_segm.hpp \
   /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/include/elements/cluster.hpp \
-  /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/include/elements/construction_area.hpp
+  /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/include/elements/construction_area.hpp \
+  /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/include/elements/enemy.hpp \
+  /Users/ivankorniichuk/Documents/UBR/Eurobot\ 2025/Eurobot2025/Robot_Controls/include/locator.hpp \
+  /opt/homebrew/Cellar/opencv/4.11.0_1/include/opencv4/opencv2/aruco.hpp \
+  /opt/homebrew/Cellar/opencv/4.11.0_1/include/opencv4/opencv2/aruco/aruco_calib.hpp

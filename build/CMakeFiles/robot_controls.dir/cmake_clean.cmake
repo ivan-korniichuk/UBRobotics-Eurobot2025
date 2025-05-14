@@ -1,4 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/robot_controls.dir/src/client.cpp.o"
+  "CMakeFiles/robot_controls.dir/src/client.cpp.o.d"
+  "CMakeFiles/robot_controls.dir/src/config.cpp.o"
+  "CMakeFiles/robot_controls.dir/src/config.cpp.o.d"
   "CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o"
   "CMakeFiles/robot_controls.dir/src/elements/cluster.cpp.o.d"
   "CMakeFiles/robot_controls.dir/src/elements/construction_area.cpp.o"

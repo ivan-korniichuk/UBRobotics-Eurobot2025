@@ -3,17 +3,78 @@
 Strategy::Strategy() {}
 
 void Strategy::start_test() {
+    // robotClient->sendMoveCommand(100, -50);
+    startAsyncPositionUpdates();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
         getCluster(StrategyStatus::COLLECTING_CLUSTER_1, StrategyStatus::COLLECTED_CLUSTER_1, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         getCluster(StrategyStatus::COLLECTING_CLUSTER_2, StrategyStatus::COLLECTED_CLUSTER_2, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         putCluster(StrategyStatus::CONSTRUCTION_GOING, StrategyStatus::CONSTRUCTION_FINISHED, StrategyStatus::ERROR_CONSTRUCTION);
     }
+    stopAsyncPositionUpdates();
 }
 
-void Strategy::updatePositions() {
-    robot->update();
-    enemy->update();
+// void Strategy::updatePositions() {
+//     robot->update();
+//     enemy->update();
+// }
+
+void Strategy::startAsyncPositionUpdates() {
+    cap.open(1);  // Moved from Locator
+    if (!cap.isOpened()) {
+        cerr << "Error: Could not open the camera!" << endl;
+        exit(-1);
+    }
+
+    running = true;
+    visualiserRunning = true;
+
+    positionThread = std::thread([this]() {
+        Mat frame;
+        while (running) {
+            cap.read(frame);
+            // frame = imread("/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/extra/img_00.jpg");
+
+            // Point2f robotPos = locator->find(robot->getMarkerId(), frame);
+            // robot->setPosition(robotPos);
+            Pose2D robotPose = locator->findWithYaw(robot->getMarkerId(), frame);
+            robot->setPosition(robotPose.position);
+            robot->setYaw(robotPose.yaw);
+
+            Point2f enemyPos = locator->find(enemy->getMarkerId(), frame);
+            enemy->setPosition(enemyPos);
+
+            float threshold = 160.0f;
+            for (Cluster* cluster : getAvailableClusters()) {
+                float dist = getDistance(enemyPos, cluster->center);
+                if (dist < threshold) {
+                    cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
+                }
+            }
+
+            this_thread::sleep_for(chrono::milliseconds(100));
+        }
+    });
+
+    visualiserThread = thread([this]() {
+        while (visualiserRunning) {
+            {
+                lock_guard<mutex> lock(visualiserMutex);
+                visualiser->updateFrame();
+            }
+            this_thread::sleep_for(chrono::milliseconds(150));
+        }
+    });
+}
+
+void Strategy::stopAsyncPositionUpdates() {
+    running = false;
+    visualiserRunning = false;
+
+    if (positionThread.joinable()) positionThread.join();
+    if (visualiserThread.joinable()) visualiserThread.join();
+
+    cap.release();
 }
 
 void Strategy::changeStatus(StrategyStatus newStatus) {
@@ -26,54 +87,110 @@ void Strategy::setStatus(StrategyStatus newStatus) {
     currentStatus = newStatus;
 }
 
+void Strategy::setTargetPath(vector<Point2f> path) {
+    if (path.size() > 1) {
+        targetPath = path;
+    }
+
+    setTargetPath();
+}
+void Strategy::setTargetPath() {
+    if (targetPath.size() > 1) {
+        targetPath[0] = robot->getPosition();
+        lock_guard<mutex> lock(visualiserMutex);
+        visualiser->path = targetPath;
+    }
+}
+
 void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
     while (true) {
         setStatus(continuingStatus);
-        updatePositions();
         targetCluster = getHighestPriorityCluster();
 
-        if (!targetCluster) {
-            setStatus(errorStatus);
-            continue;
+        if (targetCluster) {
+            vector<Point2f> path = getPathToCluster(targetCluster);
+            setTargetPath(path);
+        } else {
+            setTargetPath();
         }
 
-        vector<Point2f> path = getPathToCluster(targetCluster);
-        visualiser->path = path;
+        float dist = navigator->distanceFromPath(targetPath);
 
-        if (navigator->distanceFromPath(path) < maxAccDistance) {
-            targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+        if (dist > 0 && dist < maxAccDistance) {
+            if (targetCluster) {
+                targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+            } else {
+                Cluster closestCluster = *getClosestCluster(robot->getPosition());
+                if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(0)) < maxAccDistance) {
+                    closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
+                } else if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(1)) < maxAccDistance) {
+                    closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
+                }
+            }
             setStatus(completeStatus);
             return;
         }
-
-        visualiser->drawImage();
-        waitKey(1);
     }
 }
 
 void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
     while (true) {
         setStatus(continuingStatus);
-        updatePositions();
+        // updatePositions();
         targetConstructionArea = getHighestPriorityConstructionArea();
 
-        if (!targetConstructionArea) {
-            setStatus(errorStatus);
-            continue;
+        // if (!targetConstructionArea) {
+        //     setStatus(errorStatus);
+        //     setTargetPath();
+        //     continue;
+        // }
+
+        if (targetConstructionArea) {
+            vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->getAccessPoint());
+            setTargetPath(path);
+        } else {
+            setTargetPath();
         }
 
-        vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->getAccessPoint());
-        visualiser->path = path;
+        float dist = navigator->distanceFromPath(targetPath);
 
-        if (navigator->distanceFromPath(path) < maxAccDistance) {
-            targetConstructionArea->built = true;
+        if (dist > 0 && dist < maxAccDistance) {
+            if (targetConstructionArea) {
+                targetConstructionArea->built = true;
+            } else {
+                ConstructionArea closestConstructionArea = *getClosestConstructionArea(robot->getPosition());
+                if (getDistance(robot->getPosition(), closestConstructionArea.getAccessPoint()) < maxAccDistance) {
+                    closestConstructionArea.built = true;
+                }
+            }
             setStatus(completeStatus);
             return;
         }
 
-        visualiser->drawImage();
-        waitKey(1);
+        // {
+        //     lock_guard<mutex> lock(visualiserMutex);
+        //     visualiser->drawImage();
+        // }
     }
+}
+
+float Strategy::getTargetPathDistance() const {
+    if (targetPath.size() < 2) return 0.0f;
+
+    Point2f start = targetPath.front();
+    Point2f end = targetPath.back();
+
+    float dx = end.x - start.x;
+    float dy = end.y - start.y;
+
+    return std::sqrt(dx * dx + dy * dy);
+}
+
+float Strategy::getDistance(Point2f start, Point2f end) const {
+    float dx = end.x - start.x;
+    float dy = end.y - start.y;
+
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 vector<Cluster*> Strategy::getAvailableClusters() {
@@ -144,6 +261,41 @@ vector<Point2f> Strategy::getPathToCluster(Cluster* cluster) {
     if (dist2 != -1) return path2;
 
     return {};
+}
+
+Cluster* Strategy::getClosestCluster(const Point2f& fromPoint) {
+    Cluster* closest = nullptr;
+    float minDist = std::numeric_limits<float>::max();
+
+    for (Cluster* cluster : getAvailableClusters()) {
+        if (cluster->status != Cluster::ClusterStatus::AVAILABLE) continue;
+        // Check both access points
+        for (int i = 0; i < 2; ++i) {
+            float dist = norm(fromPoint - cluster->getAccessPoint(i));
+            if (dist < minDist) {
+                minDist = dist;
+                closest = cluster;
+            }
+        }
+    }
+
+    return closest;
+}
+
+ConstructionArea* Strategy::getClosestConstructionArea(const Point2f& fromPoint) {
+    ConstructionArea* closest = nullptr;
+    float minDist = std::numeric_limits<float>::max();
+
+    for (ConstructionArea* area : getAvailableConstructionAreas()) {
+        if (area->built) continue;
+        float dist = norm(fromPoint - area->getAccessPoint());
+        if (dist < minDist) {
+            minDist = dist;
+            closest = area;
+        }
+    }
+
+    return closest;
 }
 
 string Strategy::strategyStatusToString(StrategyStatus status) {

@@ -6,9 +6,13 @@
 #include "elements/enemy.hpp"
 #include "visualiser.hpp"
 #include "navigator.hpp"
+#include "client.hpp"
 #include "locator.hpp"
 #include <vector>
 #include <string>
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 using namespace std;
 using namespace cv;
@@ -30,6 +34,8 @@ public:
         ERROR_COLLECTING_CLUSTER,
         ERROR_CONSTRUCTION,
     };
+
+    RobotClient* robotClient;
 
     Cluster* cluster1;
     Cluster* cluster2;
@@ -58,9 +64,12 @@ public:
 
     bool flagDeployed = false;
     float maxAccDistance = 50;
+    vector<Point2f> targetPath = {};
 
     StrategyStatus currentStatus = StrategyStatus::IDLE;
     StrategyStatus previousStatus = StrategyStatus::IDLE;
+
+    mutex visualiserMutex;
 
     Strategy();
 
@@ -68,6 +77,8 @@ public:
     void updatePositions();
     void changeStatus(StrategyStatus newStatus);
     string strategyStatusToString(StrategyStatus status);
+    void startAsyncPositionUpdates();
+    void stopAsyncPositionUpdates();
 
 private:
     Cluster* targetCluster = nullptr;
@@ -75,6 +86,8 @@ private:
     Cluster* targetCluster2 = nullptr;
     ConstructionArea* targetConstructionArea = nullptr;
 
+    void setTargetPath(vector<Point2f> path);
+    void setTargetPath();
     void setStatus(StrategyStatus newStatus);
     void getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
     void putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus);
@@ -83,4 +96,16 @@ private:
     Cluster* getHighestPriorityCluster();
     ConstructionArea* getHighestPriorityConstructionArea();
     vector<Point2f> getPathToCluster(Cluster* cluster);
+    Cluster* getClosestCluster(const Point2f& fromPoint);
+    ConstructionArea* getClosestConstructionArea(const Point2f& fromPoint);
+    float getTargetPathDistance() const;
+    float getDistance(Point2f start, Point2f end) const;
+    atomic<bool> running;
+    VideoCapture cap;
+    Mat sharedFrame;
+    mutex cameraMutex;
+    thread cameraThread;
+    thread positionThread;
+    thread visualiserThread;
+    atomic<bool> visualiserRunning;
 };
