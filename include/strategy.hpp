@@ -6,6 +6,7 @@
 #include "elements/enemy.hpp"
 #include "visualiser.hpp"
 #include "navigator.hpp"
+#include "client.hpp"
 #include "locator.hpp"
 #include <vector>
 #include <string>
@@ -33,6 +34,8 @@ public:
         ERROR_COLLECTING_CLUSTER,
         ERROR_CONSTRUCTION,
     };
+
+    RobotClient* robotClient;
 
     Cluster* cluster1;
     Cluster* cluster2;

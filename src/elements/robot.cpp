@@ -1,5 +1,8 @@
 #include "elements/robot.hpp"
 #include <iostream>
+#include "config.hpp"
+
+using namespace robotVars;
 
 Robot::Robot(int markerId, Point2f position, Scalar color, float size, float obstacleRadius, string id) {
     vector<Point2f> square = {{0,0},{0,1},{1,1},{1,0}};
@@ -21,6 +24,17 @@ void Robot::drawElement(Mat& image) {
     Element::drawElement(image);
     circle(image, position, 5, color, FILLED, LINE_AA);
     putText(image, id, position - Point2f(90, 20), FONT_HERSHEY_SIMPLEX, 2, color, 5);
+}
+
+void Robot::setYaw(float yaw) {
+    if (yaw == -999) return;
+    std::lock_guard<std::mutex> lock(yawMutex);
+    this->yaw = fmod(yaw + 360.0 - cameraAngle, 360.0);
+}
+
+float Robot::getYaw() const {
+    std::lock_guard<std::mutex> lock(yawMutex);
+    return yaw;
 }
 
 void Robot::setPosition(Point2f position) {

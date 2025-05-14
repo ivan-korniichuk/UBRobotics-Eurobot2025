@@ -3,6 +3,7 @@
 Strategy::Strategy() {}
 
 void Strategy::start_test() {
+    // robotClient->sendMoveCommand(100, -50);
     startAsyncPositionUpdates();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
@@ -13,10 +14,10 @@ void Strategy::start_test() {
     stopAsyncPositionUpdates();
 }
 
-void Strategy::updatePositions() {
-    robot->update();
-    enemy->update();
-}
+// void Strategy::updatePositions() {
+//     robot->update();
+//     enemy->update();
+// }
 
 void Strategy::startAsyncPositionUpdates() {
     cap.open(1);  // Moved from Locator
@@ -32,14 +33,26 @@ void Strategy::startAsyncPositionUpdates() {
         Mat frame;
         while (running) {
             cap.read(frame);
+            // frame = imread("/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/extra/img_00.jpg");
 
-            Point2f robotPos = locator->find(robot->getMarkerId(), frame);
+            // Point2f robotPos = locator->find(robot->getMarkerId(), frame);
+            // robot->setPosition(robotPos);
+            Pose2D robotPose = locator->findWithYaw(robot->getMarkerId(), frame);
+            robot->setPosition(robotPose.position);
+            robot->setYaw(robotPose.yaw);
+
             Point2f enemyPos = locator->find(enemy->getMarkerId(), frame);
-
-            robot->setPosition(robotPos);
             enemy->setPosition(enemyPos);
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            float threshold = 160.0f;
+            for (Cluster* cluster : getAvailableClusters()) {
+                float dist = getDistance(enemyPos, cluster->center);
+                if (dist < threshold) {
+                    cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
+                }
+            }
+
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
     });
 
@@ -49,7 +62,7 @@ void Strategy::startAsyncPositionUpdates() {
                 lock_guard<mutex> lock(visualiserMutex);
                 visualiser->updateFrame();
             }
-            this_thread::sleep_for(chrono::milliseconds(15));
+            this_thread::sleep_for(chrono::milliseconds(150));
         }
     });
 }
@@ -92,21 +105,7 @@ void Strategy::setTargetPath() {
 void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
     while (true) {
         setStatus(continuingStatus);
-        // updatePositions();
         targetCluster = getHighestPriorityCluster();
-
-        // if (!targetCluster) {
-        //     setStatus(errorStatus);
-        //     setTargetPath();
-        //     continue;
-        // }
-
-        // vector<Point2f> path = getPathToCluster(targetCluster);
-        // setTargetPath(path);
-        // if (path.size() > 0) {
-        //     lock_guard<mutex> lock(visualiserMutex);
-        //     visualiser->path = path;
-        // }
 
         if (targetCluster) {
             vector<Point2f> path = getPathToCluster(targetCluster);
@@ -131,28 +130,6 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
             setStatus(completeStatus);
             return;
         }
-
-        // float dist = getTargetPathDistance();
-
-        // if (dist > 0 && dist < maxAccDistance) {
-        //     if (targetCluster) {
-        //         targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
-        //     } else {
-        //         Cluster closestCluster = *getClosestCluster(robot->getPosition());
-        //         if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(0)) < maxAccDistance) {
-        //             closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
-        //         } else if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(1)) < maxAccDistance) {
-        //             closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
-        //         }
-        //     }
-        //     setStatus(completeStatus);
-        //     return;
-        // }
-
-        // {
-        //     lock_guard<mutex> lock(visualiserMutex);
-        //     visualiser->drawImage();
-        // }
     }
 }
 

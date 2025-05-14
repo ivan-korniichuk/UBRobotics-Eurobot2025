@@ -9,11 +9,25 @@
 #include "locator.hpp"
 #include "visualiser.hpp"
 #include "strategy.hpp"
+#include <client.hpp>
+
+namespace robotVars {
+  extern const float cameraAngle;
+}
+
+namespace locatorVars {
+  extern const float stationaryMarkerSize;
+  extern const float movingMarker;
+  extern const vector<Point3f> realMPoints;
+}
 
 // Basic constants
 extern const float ROBOT_RADIUS;
 extern const float ROBOT_SIZE;
 extern const float ENEMY_SIZE;
+
+extern const string SERVER_IP;
+extern const int SERVER_PORT;
 
 extern int width, height;
 extern Rect matBoundary;
@@ -31,8 +45,11 @@ extern Cluster cluster6, cluster7, cluster8, cluster9, cluster10;
 extern vector<Cluster*> clusters;
 
 // Construction areas
-extern ConstructionArea constructionArea1, constructionArea2, constructionArea3;
-extern ConstructionArea constructionArea4, constructionArea5, constructionArea6;
+extern ConstructionArea constructionAreaY1, constructionAreaY2, constructionAreaY3;
+extern ConstructionArea constructionAreaY4, constructionAreaY5, constructionAreaY6;
+
+extern ConstructionArea constructionAreaB1, constructionAreaB2, constructionAreaB3;
+extern ConstructionArea constructionAreaB4, constructionAreaB5, constructionAreaB6;
 
 // Core system components
 extern Locator locator;
@@ -41,6 +58,8 @@ extern Strategy strategy;
 extern Navigator navigator;
 extern Enemy enemy;
 extern Robot robot;
+
+extern RobotClient robotClient;
 
 // Setup functions
 void setUpEnvironment();

@@ -16,6 +16,8 @@ private:
     Point2f position;
     int markerId;
     mutable mutex posMutex;
+    mutable mutex yawMutex;
+    float yaw = -999;
 
 public:
     Locator* locator;
@@ -28,4 +30,6 @@ public:
     void update();
     int getMarkerId() const;
     void setMarkerId(int markerId);
+    void setYaw(float yaw);
+    float getYaw() const;
 };

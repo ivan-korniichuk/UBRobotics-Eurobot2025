@@ -54,12 +54,17 @@ void Visualiser::updateFrame() {
         line(imgCopy, p1, p2, Scalar(255, 255, 255), 5, LINE_AA);
     }
 
+    float yaw = robot->getYaw();
+
+    putText(imgCopy, to_string(static_cast<int>(yaw)) + "*",
+    Point2f(20, 80), FONT_HERSHEY_SIMPLEX, 2, Scalar(0, 255, 255), 3);
+
     lock_guard<mutex> lock(frameMutex);
     latestFrame = imgCopy;
 }
 
 void Visualiser::drawImage() {
-    std::lock_guard<std::mutex> lock(frameMutex);
+    lock_guard<mutex> lock(frameMutex);
     if (!latestFrame.empty()) {
         imshow("VISUALISER", latestFrame);
         waitKey(1);

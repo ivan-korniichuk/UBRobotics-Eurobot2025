@@ -71,6 +71,8 @@
     "system_error": "cpp",
     "text_encoding": "cpp",
     "thread": "cpp",
-    "shared_mutex": "cpp"
+    "shared_mutex": "cpp",
+    "fstream": "cpp",
+    "locale": "cpp"
   }
 }

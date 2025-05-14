@@ -1,5 +1,37 @@
 #include "config.hpp"
 
+namespace robotVars {
+ const float cameraAngle = 0; // set to the correct value
+}
+
+namespace locatorVars {
+  const float stationaryMarkerSize = 100.0f;
+  const float movingMarker = 70.0f;
+  // const float stationaryMarkerSize = 84.0f;
+  // const float movingMarker = 70.0f;
+  const vector<Point3f> realMPoints = {
+    {2400, 1400, 0},
+    {600, 1400, 0},
+    {2400, 600, 0},
+    {600, 600, 0}
+  };
+  // const vector<Point3f> realMPoints = {
+  //     {70, 60, 0},
+  //     {65, 695, 0},
+  //     {1335, 65, 0},
+  //     {1328, 694, 0}
+  // };
+  // const vector<Point3f> realMPoints = {
+  //   {1218, 1230, 0},
+  //   {1216, 55, 0},
+  //   {140, 60, 0},
+  //   {142, 1230, 0}
+  // };
+}
+
+const string SERVER_IP = "192.168.4.1"; // replace with aclual IP
+const int SERVER_PORT = 5005;
+
 const float ROBOT_RADIUS = 200; // avoidance
 const float ROBOT_SIZE = 200; // main body
 const float ENEMY_SIZE = 250; // main body
@@ -83,23 +115,49 @@ Element constBFrontEl(constBFrontVec, Scalar(255, 0, 0), ROBOT_RADIUS);
 Element constYEdgeEl(constYEdgeVec, Scalar(0, 255, 255), ROBOT_RADIUS);
 Element constBEdgeEl(constBEdgeVec, Scalar(255, 0, 0), ROBOT_RADIUS);
 
-vector<Point2f> constructionTest1 = { Point2f(1600, 50), Point2f(1600, 200), Point2f(1950, 200), Point2f(1950, 50) };
-ConstructionArea constructionArea1(constructionTest1, Scalar(0, 0, 255), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
+// Yellow
+vector<Point2f> constructionY1 = { Point2f(1600, 50), Point2f(1600, 200), Point2f(1950, 200), Point2f(1950, 50) };
+ConstructionArea constructionAreaY1(constructionY1, Scalar(0, 0, 255), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
 
-vector<Point2f> constructionTest2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
-ConstructionArea constructionArea2(constructionTest2, Scalar(0, 0, 255), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
+vector<Point2f> constructionY2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
+ConstructionArea constructionAreaY2(constructionY2, Scalar(0, 0, 255), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
 
-vector<Point2f> constructionTest3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
-ConstructionArea constructionArea3(constructionTest3, Scalar(0, 0, 255), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+vector<Point2f> constructionY3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
+ConstructionArea constructionAreaY3(constructionY3, Scalar(0, 0, 255), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
 
-vector<Point2f> constructionTest4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
-ConstructionArea constructionArea4(constructionTest4, Scalar(0, 0, 255), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+vector<Point2f> constructionY4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
+ConstructionArea constructionAreaY4(constructionY4, Scalar(0, 0, 255), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
 
-vector<Point2f> constructionTest5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
-ConstructionArea constructionArea5(constructionTest5, Scalar(0, 0, 255), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
+vector<Point2f> constructionY5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
+ConstructionArea constructionAreaY5(constructionY5, Scalar(0, 0, 255), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
 
-vector<Point2f> constructionTest6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
-ConstructionArea constructionArea6(constructionTest6, Scalar(0, 0, 255), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
+vector<Point2f> constructionY6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
+ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 255), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
+
+
+// vector<Point2f> areaBSideVec = { Point2f(2550, 650), Point2f(2550, 1100), Point2f(3000, 1100), Point2f(3000, 650) };
+// vector<Point2f> areaBFrontVec = { Point2f(1000, 0), Point2f(1000, 450), Point2f(1450, 450), Point2f(1450, 0) };
+// vector<Point2f> constBFrontVec = { Point2f(550, 0), Point2f(550, 150), Point2f(1000, 150), Point2f(1000, 0) };
+// vector<Point2f> constBEdgeVec = { Point2f(2550, 0), Point2f(2550, 150), Point2f(3000, 150), Point2f(3000, 0) };
+
+// Blue
+vector<Point2f> constructionB1 = { Point2f(2800, 700), Point2f(2800, 1050), Point2f(2950, 1050), Point2f(2950, 700) };
+ConstructionArea constructionAreaB1(constructionB1, Scalar(0, 0, 255), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
+
+vector<Point2f> constructionB2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
+ConstructionArea constructionAreaB2(constructionB2, Scalar(0, 0, 255), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
+
+vector<Point2f> constructionB3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
+ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 255), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+
+vector<Point2f> constructionB4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
+ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 255), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+
+vector<Point2f> constructionB5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
+ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 255), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
+
+vector<Point2f> constructionB6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
+ConstructionArea constructionAreaB6(constructionB6, Scalar(0, 0, 255), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
 
 Visualiser visualiser(height, width);
 
@@ -109,22 +167,67 @@ Strategy strategy;
 
 Locator locator;
 
-Enemy enemy(2, {350,1750}, Scalar(0,0,255), 250, ROBOT_RADIUS);
-Robot robot(7, {2650,1750}, Scalar(0,255,255), 200, ROBOT_RADIUS);
+RobotClient robotClient(SERVER_IP, SERVER_PORT); 
+
+Enemy enemy(2, {350,1750}, Scalar(0,0,255), ENEMY_SIZE, ROBOT_RADIUS);
+Robot robotY(7, {2650,1750}, Scalar(0,255,255), ROBOT_SIZE, ROBOT_RADIUS);
+Robot robotB(7, {2650,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 
 void setUpEnvironment() {
   cout << "Innit start" << endl;
+  // robotClient.sendHomingCommand();
+  // waitKey(10000);
+  // robotClient.sendCustomMoveCommand(-4750, -1500, -1890, -1945);
+
+  robotClient.sendOpenLowerGrippers(true);
+  robotClient.sendOpenUpperGrippers(true);
+
+  waitKey(2000);
+
+  robotClient.sendOpenUpperGrippers(false);
+
+  waitKey(1000);
+
+  robotClient.sendCustomMoveCommand(0, 950, 700, 700);
+
+  waitKey(10000);
+
+  robotClient.sendTwistOuterGrippers(true);
+
+  waitKey(1000);
+
+  robotClient.sendCustomMoveCommand(0, -950, 800, 800);
+
+  waitKey(10000);
+
+  robotClient.sendTwistOuterGrippers(false);
+
+  waitKey(1000);
+
+  // robotClient.sendOpenUpperGrippers(true);
+
+  // robotClient.sendMoveFullCommand();
+  // robotClient.sendOpenLowerGrippers(true);
+  // robotClient.sendOpenUpperGrippers(true);
+  // waitKey(200);
+  // robotClient.sendOpenUpperGrippers(false);
+  // waitKey(200);
+  // robotClient.sendTwistOuterGrippers(true);
+  // waitKey(1000);
+  // robotClient.sendTwistOuterGrippers(false);
+  // waitKey(1000);
+  // robotClient.sendOpenLowerGrippers(false);
+  // robotClient.sendOpenUpperGrippers(false);
+
+
   locator.estimateCameraPose();
   navigator.insertElement(ramp);
 
   enemy.locator = &locator;
   navigator.enemy = &enemy;
 
-  robot.locator = &locator;
-
-  //visualiser 
+  //visualiser  
   visualiser.enemy = &enemy;
-  visualiser.robot = &robot;
   visualiser.baseB = &baseB;
   visualiser.baseY = &baseY;
   visualiser.ramp = &ramp;
@@ -142,12 +245,6 @@ void setUpEnvironment() {
   visualiser.cluster8 = &cluster8;
   visualiser.cluster9 = &cluster9;
   visualiser.cluster10 = &cluster10;
-  visualiser.constructionArea1 = &constructionArea1;
-  visualiser.constructionArea2 = &constructionArea2;
-  visualiser.constructionArea3 = &constructionArea3;
-  visualiser.constructionArea4 = &constructionArea4;
-  visualiser.constructionArea5 = &constructionArea5;
-  visualiser.constructionArea6 = &constructionArea6;
 
   visualiser.construction12IM = &areaYFrontEl;
   visualiser.construction34IM = &areaYSideEl;
@@ -175,6 +272,8 @@ void setUpEnvironment() {
   strategy.cluster9 = &cluster9;
   strategy.cluster10 = &cluster10;
 
+  strategy.robotClient = &robotClient;
+
   cout << "Main Innit done" << endl;
 }
 
@@ -182,17 +281,27 @@ void setUpYellow(int ourMaker, int theirMarker) {
   setUpEnvironment();
 
   enemy.setMarkerId(theirMarker);
-  robot.setMarkerId(ourMaker);
+  robotY.setMarkerId(ourMaker);
 
   strategy.enemy = &enemy;
-  strategy.robot = &robot;
+  strategy.robot = &robotY;
 
-  strategy.constructionArea1 = &constructionArea1;
-  strategy.constructionArea2 = &constructionArea2;
-  strategy.constructionArea3 = &constructionArea3;
-  strategy.constructionArea4 = &constructionArea4;
-  strategy.constructionArea5 = &constructionArea5;
-  strategy.constructionArea6 = &constructionArea6;
+  visualiser.robot = &robotY;
+  robotY.locator = &locator;
+
+  visualiser.constructionArea1 = &constructionAreaY1;
+  visualiser.constructionArea2 = &constructionAreaY2;
+  visualiser.constructionArea3 = &constructionAreaY3;
+  visualiser.constructionArea4 = &constructionAreaY4;
+  visualiser.constructionArea5 = &constructionAreaY5;
+  visualiser.constructionArea6 = &constructionAreaY6;
+
+  strategy.constructionArea1 = &constructionAreaY1;
+  strategy.constructionArea2 = &constructionAreaY2;
+  strategy.constructionArea3 = &constructionAreaY3;
+  strategy.constructionArea4 = &constructionAreaY4;
+  strategy.constructionArea5 = &constructionAreaY5;
+  strategy.constructionArea6 = &constructionAreaY6;
 
   clusters.push_back(&cluster1);
   clusters.push_back(&cluster2);;
@@ -221,11 +330,66 @@ void setUpYellow(int ourMaker, int theirMarker) {
 
   navigator.setClusters(clusters);
 
-  navigator.setConstructionAreas({&constructionArea1, &constructionArea2, &constructionArea3, &constructionArea4, &constructionArea5, &constructionArea6});
+  navigator.setConstructionAreas({&constructionAreaY1, &constructionAreaY2, &constructionAreaY3, &constructionAreaY4, &constructionAreaY5, &constructionAreaY6});
 
   cout << "Yellow Innit done" << endl;
 }
 
+//change constructions
 void setUpBlue(int ourMaker, int theirMarker) {
   setUpEnvironment();
+
+  enemy.setMarkerId(theirMarker);
+  robotB.setMarkerId(ourMaker);
+
+  strategy.enemy = &enemy;
+  strategy.robot = &robotB;
+
+  visualiser.robot = &robotB;
+  robotB.locator = &locator;
+
+  visualiser.constructionArea1 = &constructionAreaB1;
+  visualiser.constructionArea2 = &constructionAreaB2;
+  visualiser.constructionArea3 = &constructionAreaB3;
+  visualiser.constructionArea4 = &constructionAreaB4;
+  visualiser.constructionArea5 = &constructionAreaB5;
+  visualiser.constructionArea6 = &constructionAreaB6;
+
+  strategy.constructionArea1 = &constructionAreaB1;
+  strategy.constructionArea2 = &constructionAreaB2;
+  strategy.constructionArea3 = &constructionAreaB3;
+  strategy.constructionArea4 = &constructionAreaB4;
+  strategy.constructionArea5 = &constructionAreaB5;
+  strategy.constructionArea6 = &constructionAreaB6;
+
+  clusters.push_back(&cluster1);
+  clusters.push_back(&cluster2);;
+  clusters.push_back(&cluster3);
+  clusters.push_back(&cluster4);
+  clusters.push_back(&cluster5);
+  clusters.push_back(&cluster6);
+  clusters.push_back(&cluster7);
+  clusters.push_back(&cluster8);
+  clusters.push_back(&cluster9);
+  clusters.push_back(&cluster10);
+
+  navigator.insertElement(baseB);
+
+  navigator.insertElement(areaYSideEl);
+  // navigator.insertElement(areaBSideEl);
+
+  navigator.insertElement(areaYFrontEl);
+  // navigator.insertElement(areaBFrontEl);
+
+  navigator.insertElement(constYFrontEl);
+  // navigator.insertElement(constBFrontEl);
+
+  navigator.insertElement(constYEdgeEl);
+  // navigator.insertElement(constBEdgeEl);
+
+  navigator.setClusters(clusters);
+
+  navigator.setConstructionAreas({&constructionAreaB1, &constructionAreaB2, &constructionAreaB3, &constructionAreaB4, &constructionAreaB5, &constructionAreaB6});
+
+  cout << "Blue Innit done" << endl;
 }

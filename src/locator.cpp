@@ -1,6 +1,8 @@
 #include "locator.hpp"
-
 #include <chrono>
+#include <config.hpp>
+
+using namespace locatorVars;
 
 Locator::Locator() {
     FileStorage fs("camera_params.yml", FileStorage::READ);
@@ -14,27 +16,21 @@ Locator::Locator() {
     }
 
     aruco::Dictionary dictionary = aruco::getPredefinedDictionary(aruco::DICT_4X4_100);
-    aruco::DetectorParameters parameters;
+    aruco::DetectorParameters parameters = aruco::DetectorParameters();
+
+    // parameters.adaptiveThreshWinSizeMin = 5;
+    // parameters.adaptiveThreshWinSizeMax = 35;
+    // parameters.adaptiveThreshWinSizeStep = 5;
+
+    // parameters.polygonalApproxAccuracyRate = 0.04;
+
+    // parameters.cornerRefinementMethod = aruco::CORNER_REFINE_SUBPIX;
+    // parameters.cornerRefinementWinSize = 5;
+    // parameters.cornerRefinementMaxIterations = 30;
+    // parameters.cornerRefinementMinAccuracy = 0.01;
+
     detector = aruco::ArucoDetector(dictionary, parameters);
 
-    // realMPoints = {
-    //     {2400, 1400, 0},
-    //     {600, 1400, 0},
-    //     {2400, 600, 0},
-    //     {600, 600, 0}
-    // };
-    // realMPoints = {
-    //     {70, 60, 0},
-    //     {65, 695, 0},
-    //     {1335, 65, 0},
-    //     {1328, 694, 0}
-    // };
-    realMPoints = {
-        {1218, 1230, 0},
-        {1216, 55, 0},
-        {140, 60, 0},
-        {142, 1230, 0}
-    };
 
     cap.open(1);
     if (!cap.isOpened()) {
@@ -67,6 +63,7 @@ void Locator::estimateCameraPose() {
 
     while (poseSamplesCollected < POSE_SAMPLE_LIMIT) {
         if (!cap.read(frame)) continue;
+        // frame = imread("/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/extra/img_00.jpg");
 
         cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
         detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
@@ -76,9 +73,12 @@ void Locator::estimateCameraPose() {
 
         for (size_t i = 0; i < markerIds.size(); ++i) {
             int id = markerIds[i];
-            if (id >= 0 && id <= 3) {
-                boardImagePoints.push_back(markerCorners[i][0]);
-                boardRealPoints.push_back(realMPoints[id]);
+            if (id >= 20 && id <= 23) {
+                int mIndex = id % 20;
+                Point2f markerCenter = (markerCorners[i][0] + markerCorners[i][1] +
+                    markerCorners[i][2] + markerCorners[i][3]) / 4;
+                boardImagePoints.push_back(markerCenter);
+                boardRealPoints.push_back(realMPoints[mIndex]);
             }
         }
 
@@ -140,6 +140,59 @@ Point2f Locator::find(int movingMarkerId, const cv::Mat& frame) {
     }
 
     return Point2f(-1, -1);
+}
+
+Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
+    if (!cameraPoseFixed) {
+        std::cerr << "Error: Camera pose not yet fixed. Call estimateCameraPose() first." << std::endl;
+        return Pose2D{Point2f(-1.0f, -1.0f), -999.0f};
+    }
+
+    Mat grayFrame;
+    vector<vector<Point2f>> markerCorners;
+    vector<int> markerIds;
+    vector<vector<Point2f>> rejectedCandidates;
+
+    vector<Point3f> realMarkerPoints = {
+        {-movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, -movingMarker / 2, 0},
+        {-movingMarker / 2, -movingMarker / 2, 0}
+    };
+
+    cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+    detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
+
+    Mat rvecMarker, tvecMarker;
+    bool markerDetected = false;
+
+    for (size_t i = 0; i < markerIds.size(); ++i) {
+        if (markerIds[i] == movingMarkerId) {
+            markerDetected = solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker, false, SOLVEPNP_IPPE_SQUARE);
+            break;
+        }
+    }
+
+    if (markerDetected) {
+        Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
+
+
+        Mat R_marker;
+        Rodrigues(rvecMarker, R_marker);
+        Mat R_board_relative = rodMain.t() * R_marker;
+        double yaw = atan2(R_board_relative.at<double>(1, 0), R_board_relative.at<double>(0, 0));
+        double yaw_deg = yaw * 180.0 / CV_PI;
+        
+        Pose2D pose;
+        pose.position = cv::Point2f(
+            static_cast<float>(markerWorldPos.at<double>(0, 0)),
+            static_cast<float>(markerWorldPos.at<double>(1, 0))
+        );
+        pose.yaw = yaw_deg;
+        return pose;
+    }
+
+    return Pose2D{Point2f(-1.0f, -1.0f), -999.0f};
 }
 
 Point2f Locator::find(int movingMarkerId) {
