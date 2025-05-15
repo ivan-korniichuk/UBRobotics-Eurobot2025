@@ -59,7 +59,10 @@ public:
     Mat latestFrame;
     mutex frameMutex;
 
+    float elapsedTime = 0.0f;
+
     Visualiser(int height, int width, Scalar color = Scalar(60, 60, 30));
     void updateFrame();
     void drawImage();
+    void setElapsedTime(float time);
 };

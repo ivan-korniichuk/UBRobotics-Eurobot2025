@@ -57,7 +57,10 @@ void Visualiser::updateFrame() {
     float yaw = robot->getYaw();
 
     putText(imgCopy, to_string(static_cast<int>(yaw)) + "*",
-    Point2f(20, 80), FONT_HERSHEY_SIMPLEX, 2, Scalar(0, 255, 255), 3);
+    Point2f(20, 80), FONT_HERSHEY_SIMPLEX, 2, Scalar(50, 50, 255), 3);
+
+    string timeText = "Time: " + to_string(static_cast<int>(elapsedTime)) + "s";
+    putText(imgCopy, timeText, Point2f(170, 80), FONT_HERSHEY_SIMPLEX, 2, Scalar(50, 50, 255), 3);
 
     lock_guard<mutex> lock(frameMutex);
     latestFrame = imgCopy;
@@ -69,4 +72,8 @@ void Visualiser::drawImage() {
         imshow("VISUALISER", latestFrame);
         waitKey(1);
     }
+}
+
+void Visualiser::setElapsedTime(float time) {
+    elapsedTime = time;
 }

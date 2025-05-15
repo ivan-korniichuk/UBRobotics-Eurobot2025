@@ -5,6 +5,7 @@ Strategy::Strategy() {}
 void Strategy::start_test() {
     // robotClient->sendMoveCommand(100, -50);
     startAsyncPositionUpdates();
+    startTimer();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
         getCluster(StrategyStatus::COLLECTING_CLUSTER_1, StrategyStatus::COLLECTED_CLUSTER_1, StrategyStatus::ERROR_COLLECTING_CLUSTER);
@@ -32,14 +33,9 @@ void Strategy::startAsyncPositionUpdates() {
     positionThread = std::thread([this]() {
         Mat frame;
         while (running) {
-            auto startTime = std::chrono::high_resolution_clock::now();
             cap.read(frame);
             Pose2D robotPose1 = locator->findWithYaw(robot->getMarkerId(), frame);
             Point2f enemyPos1 = locator->find(enemy->getMarkerId(), frame);
-
-            auto endTime = std::chrono::high_resolution_clock::now(); // End timing
-            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-            std::cout << "Iteration time: " << duration << " ms" << std::endl;
 
             cap.read(frame);
             Pose2D robotPose2 = locator->findWithYaw(robot->getMarkerId(), frame);
@@ -358,4 +354,31 @@ string Strategy::strategyStatusToString(StrategyStatus status) {
         case StrategyStatus::ERROR_CONSTRUCTION: return "ERROR_CONSTRUCTION";
         default: return "UNKNOWN";
     }
+}
+
+void Strategy::startTimer() {
+    startTime = chrono::steady_clock::now();
+
+    timerThread = thread([this]() {
+        bool simasOutDone = false;
+
+        while (running) {
+            auto elapsed = chrono::steady_clock::now() - startTime;
+            auto seconds = chrono::duration_cast<chrono::seconds>(elapsed).count();
+
+            if (!simasOutDone && seconds >= 10) {
+                std::cout << "Simas out" << endl;
+                simasOutDone = true;
+            }
+
+            if (seconds >= 20) {
+                cout << "Timer reached 100 seconds. Halting strategy." << endl;
+                stopAsyncPositionUpdates();  // Halts threads
+                break;
+            }
+
+            visualiser->setElapsedTime(static_cast<float>(seconds));
+            this_thread::sleep_for(chrono::milliseconds(100));
+        }
+    });
 }

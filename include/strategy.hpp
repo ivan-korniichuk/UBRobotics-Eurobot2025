@@ -74,11 +74,12 @@ public:
     Strategy();
 
     void start_test();
-    void updatePositions();
+    // void updatePositions();
     void changeStatus(StrategyStatus newStatus);
     string strategyStatusToString(StrategyStatus status);
     void startAsyncPositionUpdates();
     void stopAsyncPositionUpdates();
+    void startTimer();
 
 private:
     Cluster* targetCluster = nullptr;
@@ -108,4 +109,6 @@ private:
     thread positionThread;
     thread visualiserThread;
     atomic<bool> visualiserRunning;
+    chrono::steady_clock::time_point startTime;
+    thread timerThread;
 };
