@@ -178,31 +178,52 @@ void setUpEnvironment() {
   // robotClient.sendHomingCommand();
   // waitKey(10000);
   // robotClient.sendCustomMoveCommand(-4750, -1500, -1890, -1945);
+  // waitKey(3000);
+  // while (true) {
+  //   robotClient.sendLocomotionCommand(0, 5000, 0, 3000);
+  //   waitKey(300);
+  // }
+  // waitKey(30000);
+  //
 
-  robotClient.sendOpenLowerGrippers(true);
-  robotClient.sendOpenUpperGrippers(true);
+  // waitKey(1000);
 
-  waitKey(2000);
+  // robotClient.sendOpenLowerGrippers(true);
+  // robotClient.sendOpenUpperGrippers(true);
+  // robotClient.sendTwistOuterGrippers(false);
 
-  robotClient.sendOpenUpperGrippers(false);
+  // waitKey(1000);
+  // robotClient.sendOpenUpperGrippers(false);
+  // robotClient.sendCustomMoveCommand(0, 2, 0, 0);
+  // waitKey(1000);
 
-  waitKey(1000);
+  // robotClient.sendCustomMoveCommand(0, 12, 10, 10);
 
-  robotClient.sendCustomMoveCommand(0, 950, 700, 700);
+  // waitKey(5000);
 
-  waitKey(10000);
+  // robotClient.sendTwistOuterGrippers(true);
+  
+  // waitKey(1000);
 
-  robotClient.sendTwistOuterGrippers(true);
+  // robotClient.sendCustomMoveCommand(0, 6, 23.5, 23.5);
 
-  waitKey(1000);
+  // waitKey(6200);
 
-  robotClient.sendCustomMoveCommand(0, -950, 800, 800);
+  // robotClient.sendTwistOuterGrippers(false);
 
-  waitKey(10000);
+  // waitKey(1000);
 
-  robotClient.sendTwistOuterGrippers(false);
+  // robotClient.sendCustomMoveCommand(0, 7, 22, 22);
 
-  waitKey(1000);
+  // waitKey(1500);
+
+  // // robotClient.sendOpenUpperGrippers(true);
+
+  // waitKey(10000);
+
+  // robotClient.sendCustomMoveCommand(0, 0, 0, 0);
+
+  //
 
   // robotClient.sendOpenUpperGrippers(true);
 

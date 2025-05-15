@@ -32,27 +32,70 @@ void Strategy::startAsyncPositionUpdates() {
     positionThread = std::thread([this]() {
         Mat frame;
         while (running) {
+            auto startTime = std::chrono::high_resolution_clock::now();
             cap.read(frame);
-            // frame = imread("/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/extra/img_00.jpg");
+            Pose2D robotPose1 = locator->findWithYaw(robot->getMarkerId(), frame);
+            Point2f enemyPos1 = locator->find(enemy->getMarkerId(), frame);
 
-            // Point2f robotPos = locator->find(robot->getMarkerId(), frame);
-            // robot->setPosition(robotPos);
-            Pose2D robotPose = locator->findWithYaw(robot->getMarkerId(), frame);
-            robot->setPosition(robotPose.position);
-            robot->setYaw(robotPose.yaw);
+            auto endTime = std::chrono::high_resolution_clock::now(); // End timing
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+            std::cout << "Iteration time: " << duration << " ms" << std::endl;
 
-            Point2f enemyPos = locator->find(enemy->getMarkerId(), frame);
-            enemy->setPosition(enemyPos);
+            cap.read(frame);
+            Pose2D robotPose2 = locator->findWithYaw(robot->getMarkerId(), frame);
+            Point2f enemyPos2 = locator->find(enemy->getMarkerId(), frame);
 
-            float threshold = 160.0f;
-            for (Cluster* cluster : getAvailableClusters()) {
-                float dist = getDistance(enemyPos, cluster->center);
-                if (dist < threshold) {
-                    cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
+            Point2f robotPos, enemyPos;
+            float robotYaw;
+            
+            // Check if robot positions are valid
+            bool validRobotPose1 = robotPose1.position != Point2f(-1, -1);
+            bool validRobotPose2 = robotPose2.position != Point2f(-1, -1);
+            
+            if (validRobotPose1 && validRobotPose2) {
+                robotPos = (robotPose1.position + robotPose2.position) / 2;
+                robotYaw = (robotPose1.yaw + robotPose2.yaw) / 2;
+            } else if (validRobotPose1) {
+                robotPos = robotPose1.position;
+                robotYaw = robotPose1.yaw;
+            } else if (validRobotPose2) {
+                robotPos = robotPose2.position;
+                robotYaw = robotPose2.yaw;
+            }
+            
+            // Set robot position and yaw only if valid data is available
+            if (validRobotPose1 || validRobotPose2) {
+                robot->setPosition(robotPos);
+                robot->setYaw(robotYaw);
+            }
+            
+            // Check if enemy positions are valid
+            bool validEnemyPos1 = enemyPos1 != Point2f(-1, -1);
+            bool validEnemyPos2 = enemyPos2 != Point2f(-1, -1);
+            
+            if (validEnemyPos1 && validEnemyPos2) {
+                enemyPos = (enemyPos1 + enemyPos2) / 2;
+            } else if (validEnemyPos1) {
+                enemyPos = enemyPos1;
+            } else if (validEnemyPos2) {
+                enemyPos = enemyPos2;
+            }
+            
+            // Set enemy position and update clusters only if valid data is available
+            if (validEnemyPos1 || validEnemyPos2) {
+                enemy->setPosition(enemyPos);
+            
+                float threshold = 160.0f;
+                for (Cluster* cluster : getAvailableClusters()) {
+                    float dist = getDistance(enemyPos, cluster->center);
+                    if (dist < threshold) {
+                        cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
+                    }
                 }
             }
 
-            this_thread::sleep_for(chrono::milliseconds(100));
+
+            this_thread::sleep_for(chrono::milliseconds(1));
         }
     });
 
@@ -62,7 +105,7 @@ void Strategy::startAsyncPositionUpdates() {
                 lock_guard<mutex> lock(visualiserMutex);
                 visualiser->updateFrame();
             }
-            this_thread::sleep_for(chrono::milliseconds(150));
+            this_thread::sleep_for(chrono::milliseconds(10));
         }
     });
 }

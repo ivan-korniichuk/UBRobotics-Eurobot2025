@@ -9,7 +9,7 @@ using namespace cv;
 int main() {
     // Set up environment for the yellow robot with your and enemy marker IDs
     // setUpYellow(7, 14);
-    setUpYellow(2, 1);
+    setUpYellow(7, 2);
 
     // Start strategy in a separate thread
     std::atomic<bool> running;

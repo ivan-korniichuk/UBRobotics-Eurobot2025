@@ -73,6 +73,7 @@
     "thread": "cpp",
     "shared_mutex": "cpp",
     "fstream": "cpp",
-    "locale": "cpp"
+    "locale": "cpp",
+    "__locale": "cpp"
   }
 }

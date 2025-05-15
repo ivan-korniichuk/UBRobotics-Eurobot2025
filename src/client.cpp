@@ -53,23 +53,50 @@ void RobotClient::sendRawCommand(const vector<uint8_t>& command) {
   sendToServer(command);
 }
 
-void RobotClient::sendCustomMoveCommand(int16_t lower, int16_t upper, int16_t left, int16_t right) {
-vector<uint8_t> args;
-auto append16 = [&](int16_t val) {
-args.push_back((val >> 8) & 0xFF);
-args.push_back(val & 0xFF);
-};
+void RobotClient::sendLocomotionCommand(float omega, float vx, float vy, float scalar) {
+  auto encode16 = [](int16_t val) {
+    return vector<uint8_t>{(uint8_t)(val >> 8), (uint8_t)(val & 0xFF)};
+  };
 
-append16(lower);
-append16(upper);
-append16(left);
-append16(right);
-append16(12000);
-append16(3300);
-append16(4000);
-append16(4000);
+  vector<uint8_t> args;
+  auto append = [&](float val) {
+    int16_t scaled = static_cast<int16_t>((int)(val * 100));
+    auto bytes = encode16(scaled);
+    args.insert(args.end(), bytes.begin(), bytes.end());
+  };
 
-sendCommandToESP(0x40, 4, args);
+  append(omega);
+  append(vx);
+  append(vy);
+  auto scalar_bytes = encode16(scalar);
+  args.insert(args.end(), scalar_bytes.begin(), scalar_bytes.end());
+
+  sendCommandToESP(0x41, 1, args);  // 0x41 = Locomotion I2C ESP
+}
+
+
+void RobotClient::sendCustomMoveCommand(float lower, float upper, float left, float right) {
+  vector<uint8_t> args;
+  auto append16 = [&](int16_t val) {
+  args.push_back((val >> 8) & 0xFF);
+  args.push_back(val & 0xFF);
+  };
+
+
+  // append16(lower);
+  // append16(upper);
+  // append16(left);
+  // append16(right);
+  append16(lower);
+  append16(upper * 10000.0 / 7.5);
+  append16(left * 10000.0 / 7.5);
+  append16(right * 10000.0 / 7.5);
+  append16(12000);
+  append16(4000);
+  append16(4000);
+  append16(4000);
+
+  sendCommandToESP(0x40, 4, args);
 }
 
 void RobotClient::sendHomingCommand() {

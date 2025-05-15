@@ -27,7 +27,8 @@ public:
     void sendMovePartialCommand();
     void sendMoveFullCommand();
     // lower upper left right grippers
-    void sendCustomMoveCommand(int16_t lower, int16_t upper, int16_t left, int16_t right);
+    void sendCustomMoveCommand(float lower, float upper, float left, float right);
+    void sendLocomotionCommand(float omega, float vx, float vy, float scalar);
     
 private:
     string serverIp;
