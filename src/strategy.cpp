@@ -55,6 +55,7 @@ void Strategy::startAsyncPositionUpdates() {
 void Strategy::runCameraLoop() {
     Mat frame;
     while (running) {
+        auto start = chrono::high_resolution_clock::now();
         if (cap.read(frame)) {
             {
                 lock_guard<mutex> lock(frameMutex);
@@ -62,12 +63,17 @@ void Strategy::runCameraLoop() {
                 frameAvailable = true;
             }
         }
+
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Camera] Loop duration: " << duration / 1000.0 << " ms" << endl;
         this_thread::sleep_for(chrono::milliseconds(1));
     }
 }
 
 void Strategy::runRobotProcessingLoop() {
     while (running) {
+        auto start = chrono::high_resolution_clock::now();
         if (!frameAvailable) continue;
 
         Mat frameCopy;
@@ -81,13 +87,16 @@ void Strategy::runRobotProcessingLoop() {
             robot->setPosition(pose.position);
             robot->setYaw(pose.yaw);
         }
-
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Robot] Loop duration: " << duration / 1000.0 << " ms" << endl;
         this_thread::sleep_for(chrono::milliseconds(1));
     }
 }
 
 void Strategy::runEnemyProcessingLoop() {
     while (running) {
+        auto start = chrono::high_resolution_clock::now();
         if (!frameAvailable) continue;
 
         Mat frameCopy;
@@ -108,7 +117,9 @@ void Strategy::runEnemyProcessingLoop() {
                 }
             }
         }
-
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Enemy] Loop duration: " << duration / 1000.0 << " ms" << endl;
         this_thread::sleep_for(chrono::milliseconds(1));
     }
 }

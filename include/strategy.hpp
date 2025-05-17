@@ -98,9 +98,7 @@ private:
     thread timerThread;
     thread motionControlThread;
     atomic<bool> motionRunning;
-    Mat sharedFrame;
     mutex frameMutex;
-    thread cameraThread;
     thread robotThread;
     thread enemyThread;
     atomic<bool> frameAvailable;
