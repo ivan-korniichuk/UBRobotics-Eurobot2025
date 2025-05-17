@@ -102,15 +102,15 @@ void loop() {
 
   delay(20);
 
-  Serial.printf("\u03c9: %.2f || v_X: %.2f || v_y: %.2f || M1: %.2f || M2: %.2f || M3: %.2f || Scalar: %d\n",
-                omega, v_x, v_y, MOT_1_speed, MOT_2_speed, MOT_3_speed, scalar);
+  // Serial.printf("\u03c9: %.2f || v_X: %.2f || v_y: %.2f || M1: %.2f || M2: %.2f || M3: %.2f || Scalar: %d\n",
+  //               omega, v_x, v_y, MOT_1_speed, MOT_2_speed, MOT_3_speed, scalar);
 }
 
 void onReceive(int len) {
   if (len < 10) return;
   I2C.readBytes(buffer, len);
   uint8_t cmd = buffer[1];
-  Serial.printf("[I2C] CMD_ID: %d | Bytes: %d\n", cmd, len);
+  // Serial.printf("[I2C] CMD_ID: %d | Bytes: %d\n", cmd, len);
 
   if (cmd == 1) {
     int16_t recvOmega  = (buffer[2] << 8) | buffer[3];

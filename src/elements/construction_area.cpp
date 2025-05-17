@@ -2,7 +2,6 @@
 
 ConstructionArea::ConstructionArea(vector<Point2f> border, Scalar color, Point2f entry, int rotation, Point2f goal, float obstacleRadius, string id, double priority)
     : Element(border, color, obstacleRadius, id) {
-    
     this->entry = entry;
     this->rotation = rotation;
     this->goal = goal;

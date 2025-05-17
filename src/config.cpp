@@ -194,34 +194,32 @@ void setUpEnvironment() {
 
   // waitKey(1000);
   // robotClient.sendOpenUpperGrippers(false);
-  // robotClient.sendCustomMoveCommand(0, 2, 0, 0);
-  // waitKey(1000);
-
-  // robotClient.sendCustomMoveCommand(0, 12, 10, 10);
-
-  // waitKey(5000);
+  // robotClient.sendCustomMoveCommand(0, 5, 2, 2);
+  // waitKey(4000);
 
   // robotClient.sendTwistOuterGrippers(true);
   
   // waitKey(1000);
 
-  // robotClient.sendCustomMoveCommand(0, 6, 23.5, 23.5);
+  // robotClient.sendCustomMoveCommand(0, 0, 14, 14);
 
-  // waitKey(6200);
+  // waitKey(5000);
 
   // robotClient.sendTwistOuterGrippers(false);
 
   // waitKey(1000);
 
-  // robotClient.sendCustomMoveCommand(0, 7, 22, 22);
+  // robotClient.sendCustomMoveCommand(0, 0, 13, 13);
 
   // waitKey(1500);
 
-  // // robotClient.sendOpenUpperGrippers(true);
+  // robotClient.sendOpenUpperGrippers(true);
 
   // waitKey(10000);
 
   // robotClient.sendCustomMoveCommand(0, 0, 0, 0);
+
+  // waitKey(1000000);
 
   //
 

@@ -21,7 +21,7 @@ void Strategy::start_test() {
 // }
 
 void Strategy::startAsyncPositionUpdates() {
-    cap.open(1);  // Moved from Locator
+    cap.open(1);
     if (!cap.isOpened()) {
         cerr << "Error: Could not open the camera!" << endl;
         exit(-1);
@@ -29,72 +29,18 @@ void Strategy::startAsyncPositionUpdates() {
 
     running = true;
     visualiserRunning = true;
+    frameAvailable = false;
 
-    positionThread = std::thread([this]() {
-        Mat frame;
-        while (running) {
-            cap.read(frame);
-            Pose2D robotPose1 = locator->findWithYaw(robot->getMarkerId(), frame);
-            Point2f enemyPos1 = locator->find(enemy->getMarkerId(), frame);
+    // Camera thread: only reads frames
+    cameraThread = thread(&Strategy::runCameraLoop, this);
 
-            cap.read(frame);
-            Pose2D robotPose2 = locator->findWithYaw(robot->getMarkerId(), frame);
-            Point2f enemyPos2 = locator->find(enemy->getMarkerId(), frame);
+    // Robot processing thread
+    robotThread = thread(&Strategy::runRobotProcessingLoop, this);
 
-            Point2f robotPos, enemyPos;
-            float robotYaw;
-            
-            // Check if robot positions are valid
-            bool validRobotPose1 = robotPose1.position != Point2f(-1, -1);
-            bool validRobotPose2 = robotPose2.position != Point2f(-1, -1);
-            
-            if (validRobotPose1 && validRobotPose2) {
-                robotPos = (robotPose1.position + robotPose2.position) / 2;
-                robotYaw = (robotPose1.yaw + robotPose2.yaw) / 2;
-            } else if (validRobotPose1) {
-                robotPos = robotPose1.position;
-                robotYaw = robotPose1.yaw;
-            } else if (validRobotPose2) {
-                robotPos = robotPose2.position;
-                robotYaw = robotPose2.yaw;
-            }
-            
-            // Set robot position and yaw only if valid data is available
-            if (validRobotPose1 || validRobotPose2) {
-                robot->setPosition(robotPos);
-                robot->setYaw(robotYaw);
-            }
-            
-            // Check if enemy positions are valid
-            bool validEnemyPos1 = enemyPos1 != Point2f(-1, -1);
-            bool validEnemyPos2 = enemyPos2 != Point2f(-1, -1);
-            
-            if (validEnemyPos1 && validEnemyPos2) {
-                enemyPos = (enemyPos1 + enemyPos2) / 2;
-            } else if (validEnemyPos1) {
-                enemyPos = enemyPos1;
-            } else if (validEnemyPos2) {
-                enemyPos = enemyPos2;
-            }
-            
-            // Set enemy position and update clusters only if valid data is available
-            if (validEnemyPos1 || validEnemyPos2) {
-                enemy->setPosition(enemyPos);
-            
-                float threshold = 160.0f;
-                for (Cluster* cluster : getAvailableClusters()) {
-                    float dist = getDistance(enemyPos, cluster->center);
-                    if (dist < threshold) {
-                        cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
-                    }
-                }
-            }
+    // Enemy processing thread
+    enemyThread = thread(&Strategy::runEnemyProcessingLoop, this);
 
-
-            this_thread::sleep_for(chrono::milliseconds(1));
-        }
-    });
-
+    // Visualiser thread
     visualiserThread = thread([this]() {
         while (visualiserRunning) {
             {
@@ -106,11 +52,74 @@ void Strategy::startAsyncPositionUpdates() {
     });
 }
 
+void Strategy::runCameraLoop() {
+    Mat frame;
+    while (running) {
+        if (cap.read(frame)) {
+            {
+                lock_guard<mutex> lock(frameMutex);
+                sharedFrame = frame.clone();
+                frameAvailable = true;
+            }
+        }
+        this_thread::sleep_for(chrono::milliseconds(1));
+    }
+}
+
+void Strategy::runRobotProcessingLoop() {
+    while (running) {
+        if (!frameAvailable) continue;
+
+        Mat frameCopy;
+        {
+            lock_guard<mutex> lock(frameMutex);
+            frameCopy = sharedFrame.clone();
+        }
+
+        Pose2D pose = locator->findWithYaw(robot->getMarkerId(), frameCopy);
+        if (pose.position != Point2f(-1, -1)) {
+            robot->setPosition(pose.position);
+            robot->setYaw(pose.yaw);
+        }
+
+        this_thread::sleep_for(chrono::milliseconds(1));
+    }
+}
+
+void Strategy::runEnemyProcessingLoop() {
+    while (running) {
+        if (!frameAvailable) continue;
+
+        Mat frameCopy;
+        {
+            lock_guard<mutex> lock(frameMutex);
+            frameCopy = sharedFrame.clone();
+        }
+
+        Point2f enemyPos = locator->find(enemy->getMarkerId(), frameCopy);
+        if (enemyPos != Point2f(-1, -1)) {
+            enemy->setPosition(enemyPos);
+
+            float threshold = 160.0f;
+            for (Cluster* cluster : getAvailableClusters()) {
+                float dist = getDistance(enemyPos, cluster->center);
+                if (dist < threshold) {
+                    cluster->setStatus(Cluster::ClusterStatus::UNAVAILABLE);
+                }
+            }
+        }
+
+        this_thread::sleep_for(chrono::milliseconds(1));
+    }
+}
+
 void Strategy::stopAsyncPositionUpdates() {
     running = false;
     visualiserRunning = false;
 
-    if (positionThread.joinable()) positionThread.join();
+    if (cameraThread.joinable()) cameraThread.join();
+    if (robotThread.joinable()) robotThread.join();
+    if (enemyThread.joinable()) enemyThread.join();
     if (visualiserThread.joinable()) visualiserThread.join();
 
     cap.release();
@@ -157,13 +166,15 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
 
         if (dist > 0 && dist < maxAccDistance) {
             if (targetCluster) {
+                alignRobot(targetCluster->center);
                 targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
             } else {
-                Cluster closestCluster = *getClosestCluster(robot->getPosition());
-                if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(0)) < maxAccDistance) {
-                    closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
-                } else if (getDistance(robot->getPosition(), closestCluster.getAccessPoint(1)) < maxAccDistance) {
-                    closestCluster.setStatus(Cluster::ClusterStatus::TAKEN);
+                targetCluster = getClosestCluster(robot->getPosition());
+                alignRobot(targetCluster->center);
+                if (getDistance(robot->getPosition(), targetCluster->getAccessPoint(0)) < maxAccDistance) {
+                    targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
+                } else if (getDistance(robot->getPosition(), targetCluster->getAccessPoint(1)) < maxAccDistance) {
+                    targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
                 }
             }
             setStatus(completeStatus);
@@ -195,11 +206,13 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
 
         if (dist > 0 && dist < maxAccDistance) {
             if (targetConstructionArea) {
+                alignRobot(targetConstructionArea->center);
                 targetConstructionArea->built = true;
             } else {
-                ConstructionArea closestConstructionArea = *getClosestConstructionArea(robot->getPosition());
-                if (getDistance(robot->getPosition(), closestConstructionArea.getAccessPoint()) < maxAccDistance) {
-                    closestConstructionArea.built = true;
+                targetConstructionArea = getClosestConstructionArea(robot->getPosition());
+                alignRobot(targetConstructionArea->center);
+                if (getDistance(robot->getPosition(), targetConstructionArea->getAccessPoint()) < maxAccDistance) {
+                    targetConstructionArea->built = true;
                 }
             }
             setStatus(completeStatus);
@@ -357,28 +370,88 @@ string Strategy::strategyStatusToString(StrategyStatus status) {
 }
 
 void Strategy::startTimer() {
-    startTime = chrono::steady_clock::now();
+    startTime = std::chrono::steady_clock::now();
+    bool simasOutDone = false;
 
-    timerThread = thread([this]() {
-        bool simasOutDone = false;
+    // Start motion control thread
+    motionRunning = true;
+    motionControlThread = std::thread([this]() {
+        while (motionRunning) {
+            controlRobotMovement();
+            this_thread::sleep_for(chrono::milliseconds(50));
+        }
+    });
 
+    // Timer logic
+    timerThread = thread([this, &simasOutDone]() {
         while (running) {
             auto elapsed = chrono::steady_clock::now() - startTime;
             auto seconds = chrono::duration_cast<chrono::seconds>(elapsed).count();
 
+            visualiser->setElapsedTime(seconds);
+
             if (!simasOutDone && seconds >= 10) {
-                std::cout << "Simas out" << endl;
+                cout << "Simas out" << endl;
                 simasOutDone = true;
             }
 
-            if (seconds >= 20) {
+            if (seconds >= 1000) {
                 cout << "Timer reached 100 seconds. Halting strategy." << endl;
-                stopAsyncPositionUpdates();  // Halts threads
+                motionRunning = false;
+
+                if (motionControlThread.joinable()) motionControlThread.join();
+
                 break;
             }
 
-            visualiser->setElapsedTime(static_cast<float>(seconds));
             this_thread::sleep_for(chrono::milliseconds(100));
         }
     });
+}
+
+void Strategy::controlRobotMovement() {
+    if (targetPath.size() < 2) return;
+
+    Point2f current = targetPath[0];
+    Point2f next = targetPath[1];
+
+    float dx = next.x - current.x;
+    float dy = next.y - current.y;
+    float pathAngle = atan2(dy, dx) * 180.0 / CV_PI;  // in degrees
+
+    float robotYaw = robot->getYaw();  // in degrees
+    float deltaYaw = pathAngle - robotYaw;
+
+    // Normalize to [-180, 180]
+    while (deltaYaw > 180) deltaYaw -= 360;
+    while (deltaYaw < -180) deltaYaw += 360;
+
+    float distance = sqrt(dx * dx + dy * dy);
+    float speed = min(100.0f, distance);  // simple proportional speed, capped at 100
+
+    robotClient->sendLocomotionCommand(deltaYaw, dx, dy, 100.0f);  // scalar 100
+}
+
+void Strategy::alignRobot(const Point2f& targetPos) {
+    Point2f robotPos = robot->getPosition();
+    float robotYaw = robot->getYaw();  // already adjusted by cameraAngle
+
+    float dx = targetPos.x - robotPos.x;
+    float dy = targetPos.y - robotPos.y;
+
+    float targetAngle = atan2(dy, dx) * 180.0 / CV_PI;
+
+    // Normalize targetAngle to [0, 360)
+    targetAngle = fmod(targetAngle + 360.0, 360.0);
+
+    float relativeYaw = targetAngle - robotYaw;
+
+    // Normalize to [-180, 180]
+    if (relativeYaw > 180) relativeYaw -= 360;
+    if (relativeYaw < -180) relativeYaw += 360;
+
+    cout << fixed << setprecision(2);
+    cout << "Robot alignment angle to target: " << relativeYaw 
+         << "° (Robot Yaw: " << robotYaw 
+         << "°, Target Angle: " << targetAngle << "°)\n";
 }
