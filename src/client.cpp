@@ -124,10 +124,25 @@ void RobotClient::sendTwistOuterGrippers(bool close) {
 }
 
 void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const std::vector<uint8_t>& args) {
-  std::vector<uint8_t> packet;
+  vector<uint8_t> packet;
   packet.push_back(espID);
   packet.push_back(cmdID);
   packet.insert(packet.end(), args.begin(), args.end());
   packet.push_back(255); // optional end marker
   sendToServer(packet);
+}
+
+void RobotClient::sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn) {
+  vector<uint8_t> args;
+
+  auto append16 = [&](int16_t val) {
+      args.push_back((val >> 8) & 0xFF);
+      args.push_back(val & 0xFF);
+  };
+
+  append16(velX);
+  append16(velY);
+  append16(turn);
+
+  sendCommandToESP(0x10, 1, args);
 }

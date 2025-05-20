@@ -47,7 +47,7 @@ void Strategy::startAsyncPositionUpdates() {
                 lock_guard<mutex> lock(visualiserMutex);
                 visualiser->updateFrame();
             }
-            this_thread::sleep_for(chrono::milliseconds(10));
+            this_thread::sleep_for(chrono::milliseconds(1));
         }
     });
 }
@@ -63,7 +63,7 @@ void Strategy::runCameraLoop() {
                 frameAvailable = true;
             }
         }
-
+        
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
         cout << "[Camera] Loop duration: " << duration / 1000.0 << " ms" << endl;
@@ -83,6 +83,7 @@ void Strategy::runRobotProcessingLoop() {
         }
 
         Pose2D pose = locator->findWithYaw(robot->getMarkerId(), frameCopy);
+
         if (pose.position != Point2f(-1, -1)) {
             robot->setPosition(pose.position);
             robot->setYaw(pose.yaw);
@@ -97,6 +98,7 @@ void Strategy::runRobotProcessingLoop() {
 void Strategy::runEnemyProcessingLoop() {
     while (running) {
         auto start = chrono::high_resolution_clock::now();
+
         if (!frameAvailable) continue;
 
         Mat frameCopy;
@@ -106,6 +108,7 @@ void Strategy::runEnemyProcessingLoop() {
         }
 
         Point2f enemyPos = locator->find(enemy->getMarkerId(), frameCopy);
+
         if (enemyPos != Point2f(-1, -1)) {
             enemy->setPosition(enemyPos);
 
@@ -120,7 +123,7 @@ void Strategy::runEnemyProcessingLoop() {
         auto end = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
         cout << "[Enemy] Loop duration: " << duration / 1000.0 << " ms" << endl;
-        this_thread::sleep_for(chrono::milliseconds(1));
+        this_thread::sleep_for(chrono::milliseconds(20));
     }
 }
 

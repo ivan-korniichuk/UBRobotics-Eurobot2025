@@ -179,10 +179,11 @@ void setUpEnvironment() {
   // waitKey(10000);
   // robotClient.sendCustomMoveCommand(-4750, -1500, -1890, -1945);
   // waitKey(3000);
-  // while (true) {
-  //   robotClient.sendLocomotionCommand(0, 5000, 0, 3000);
-  //   waitKey(300);
-  // }
+  while (true) {
+    // robotClient.sendLocomotionCommand(0, 5000, 0, 3000);
+    robotClient.sendNewESPMoveCommand(125, 0, 0);
+    waitKey(300);
+  }
   // waitKey(30000);
   //
 

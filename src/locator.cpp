@@ -98,6 +98,7 @@ void Locator::estimateCameraPose() {
     tvecMain = accumulatedT / POSE_SAMPLE_LIMIT;
     cameraPoseFixed = true;
     cout << "Camera pose fixed." << endl;
+    cap.release();
 }
 
 Point2f Locator::find(int movingMarkerId, const cv::Mat& frame) {
@@ -175,7 +176,6 @@ Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
 
     if (markerDetected) {
         Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
-
 
         Mat R_marker;
         Rodrigues(rvecMarker, R_marker);

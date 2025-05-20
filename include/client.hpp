@@ -29,6 +29,7 @@ public:
     // lower upper left right grippers
     void sendCustomMoveCommand(float lower, float upper, float left, float right);
     void sendLocomotionCommand(float omega, float vx, float vy, float scalar);
+    void sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn);
     
 private:
     string serverIp;
