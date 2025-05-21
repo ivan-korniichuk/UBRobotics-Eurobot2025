@@ -1,52 +1,100 @@
 #include "client.hpp"
 
 RobotClient::RobotClient(const string& ip, int port)
-  : serverIp(ip), serverPort(port) {}
-RobotClient::~RobotClient() {}
+  : serverIp(ip), serverPort(port), isRunning(true), socketError(false) {
+    // Socket thread (making sure that the socket to the pi stays open and re-connects when needed)
+    socketThread = thread(&RobotClient::runSocketConnectionLoop, this);
+  }
+RobotClient::~RobotClient() {
+    isRunning = false;
+    if (socketThread.joinable()) socketThread.join();
+}
+
+void RobotClient::runSocketConnectionLoop() {
+    while (isRunning) {
+        if (sockfd == -1 || socketError) {
+            while (isRunning) {
+                cerr << "Lost connection to the RPi, attempting reconnection." << endl;
+                // Attempt to reconnect to the server
+                sockfd = socket(AF_INET, SOCK_STREAM, 0);
+                if (sockfd < 0) {
+                    cerr << "Could not create socket with error '" << strerror(errno) << "', trying again." << endl;
+                    continue;
+                }
+
+                sockaddr_in serv_addr{};
+                serv_addr.sin_family = AF_INET;
+                serv_addr.sin_port = htons(serverPort);
+
+                int ok = inet_pton(AF_INET, serverIp.c_str(), &serv_addr.sin_addr);
+                if (ok != 1) {
+                    cerr << "inet_pton failed for IP [" << serverIp << "] with error '" << strerror(errno) << "', trying reconnection again." << endl;
+                    close(sockfd);
+                    continue;
+                }
+
+                if (connect(sockfd, (struct sockaddr*) &serv_addr, sizeof(serv_addr)) < 0) {
+                    cerr << "Connection to RPi failed with error '" << strerror(errno) << "', trying reconnection again." << endl;
+                    close(sockfd);
+                    continue;
+                }
+                cout << "Successfully reconnected, allowing messages to be sent." << endl;
+                socketError = false;
+                break;
+            }
+        }
+    }
+}
 
 void RobotClient::sendToServer(const vector<uint8_t>& data) {
-  int sock = socket(AF_INET, SOCK_STREAM, 0);
-  if (sock < 0) {
-    cerr << "Socket creation failed: " << strerror(errno) << endl;
+  // int sock = socket(AF_INET, SOCK_STREAM, 0);
+  // if (sock < 0) {
+  //   cerr << "Socket creation failed: " << strerror(errno) << endl;
+  //   return;
+  // }
+  //
+  // sockaddr_in serv_addr{};
+  // serv_addr.sin_family = AF_INET;
+  // serv_addr.sin_port = htons(serverPort);
+  //
+  // int ok = inet_pton(AF_INET, serverIp.c_str(), &serv_addr.sin_addr);
+  // if (ok != 1) {
+  //   cerr << "inet_pton failed for IP [" << serverIp << "], return code = " << ok << endl;
+  //   close(sock);
+  //   return;
+  // }
+  //
+  // cout << "Connecting to " << serverIp << ":" << serverPort << "...\n";
+  //
+  // if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
+  //   cerr << "Connection to RPi failed: " << strerror(errno) << endl;
+  //   close(sock);
+  //   return;
+  // }
+  if (socketError) {
     return;
   }
 
-  sockaddr_in serv_addr{};
-  serv_addr.sin_family = AF_INET;
-  serv_addr.sin_port = htons(serverPort);
-
-  int ok = inet_pton(AF_INET, serverIp.c_str(), &serv_addr.sin_addr);
-  if (ok != 1) {
-    cerr << "inet_pton failed for IP [" << serverIp << "], return code = " << ok << endl;
-    close(sock);
-    return;
-  }
-
-  cout << "Connecting to " << serverIp << ":" << serverPort << "...\n";
-
-  if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
-    cerr << "Connection to RPi failed: " << strerror(errno) << endl;
-    close(sock);
-    return;
-  }
-
-  ssize_t sent = send(sock, data.data(), data.size(), 0);
+  ssize_t sent = send(sockfd, data.data(), data.size(), 0);
   if (sent < 0) {
     cerr << "Send failed: " << strerror(errno) << endl;
-    close(sock);
+    close(sockfd);
+    socketError = true;
     return;
   }
 
   char buffer[1024] = {0};
-  ssize_t received = read(sock, buffer, 1023);
+  ssize_t received = read(sockfd, buffer, 1023);
   if (received < 0) {
     cerr << "Read failed: " << strerror(errno) << endl;
+    close(sockfd);
+    socketError = true;
   } else {
     buffer[received] = '\0';
     cout << "RPi Response: " << buffer << endl;
   }
 
-  close(sock);
+  // close(sockfd);
 }
 
 void RobotClient::sendRawCommand(const vector<uint8_t>& command) {

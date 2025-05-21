@@ -1,6 +1,8 @@
 #pragma once
 
+#include <atomic>
 #include <string>
+#include <thread>
 #include <vector>
 #include <cstdint>
 #include <sys/socket.h>
@@ -34,6 +36,12 @@ public:
 private:
     string serverIp;
     int serverPort;
+    atomic<int> sockfd = -1;
+    atomic<bool> socketError;
+    atomic<bool> isRunning;
+    thread socketThread;
+
+    void runSocketConnectionLoop();
 
     void sendToServer(const vector<uint8_t>& data);
     void sendCommandToESP(uint8_t espID, uint8_t cmdID, const std::vector<uint8_t>& args);
