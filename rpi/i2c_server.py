@@ -50,7 +50,8 @@ def main():
 
     while True:
         conn, addr = server.accept()
-        threading.Thread(target=handle_client, args=(conn, addr), daemon=True).start()
+        # threading.Thread(target=handle_client, args=(conn, addr), daemon=True).start()
+        handle_client(conn, addr)
 
 if __name__ == "__main__":
     main()
