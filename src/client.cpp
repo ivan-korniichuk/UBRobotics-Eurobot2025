@@ -123,7 +123,7 @@ void RobotClient::sendTwistOuterGrippers(bool close) {
   sendCommandToESP(0x42, 3, {static_cast<uint8_t>(close ? 1 : 0)});
 }
 
-void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const std::vector<uint8_t>& args) {
+void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const vector<uint8_t>& args) {
   vector<uint8_t> packet;
   packet.push_back(espID);
   packet.push_back(cmdID);
@@ -145,4 +145,74 @@ void RobotClient::sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn
   append16(turn);
 
   sendCommandToESP(0x10, 1, args);
+}
+
+void RobotClient::registerWithRPi() {
+  cout << "[Client] start registerWithRPi" << "\n";
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(serverPort);
+  inet_pton(AF_INET, serverIp.c_str(), &addr.sin_addr);
+
+  // connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+  if (connect(sock, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+    cerr << "[Client] Failed to connect to RPi: " << strerror(errno) << endl;
+    close(sock);
+    return;
+  }
+  send(sock, "REGISTER_FOR_PULLCORD", 23, 0);
+  char ack[8] = {0};
+  recv(sock, ack, 7, 0);
+  cout << "[Client] Registered: " << ack << "\n";
+  close(sock);
+}
+
+void RobotClient::waitForCordSignal(int listenPort) {
+  inserted = false;
+  pulled = false;
+
+  int serverSock = socket(AF_INET, SOCK_STREAM, 0);
+  if (serverSock < 0) {
+    cerr << "[Client] Failed to create socket\n";
+    return;
+  }
+
+  int opt = 1;
+  setsockopt(serverSock, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+
+  sockaddr_in addr{};
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = INADDR_ANY;
+  addr.sin_port = htons(listenPort);
+
+  if (::bind(serverSock, (sockaddr*)&addr, sizeof(addr)) < 0) {
+    cerr << "[Client] Failed to bind to port " << listenPort << ": " << strerror(errno) << endl;
+    close(serverSock);
+    return;
+  }
+
+  listen(serverSock, 1);
+
+  cout << "[Client] Waiting for cord signals...\n";
+
+  while (!inserted || !pulled) {
+    int clientSock = accept(serverSock, nullptr, nullptr);
+    if (clientSock < 0) {
+      cerr << "[Client] Failed to accept connection\n";
+      continue;
+    }
+
+    char buf[32] = {0};
+    recv(clientSock, buf, 31, 0);
+    close(clientSock);
+
+    string msg(buf);
+    cout << "[Client] Received: " << msg << "\n";
+    if (msg == "INSERTED") inserted = true;
+    if (msg == "PULLED" && inserted) pulled = true;
+  }
+
+  cout << "[Client] Cord pull confirmed. Proceeding.\n";
+  close(serverSock);
 }

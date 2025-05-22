@@ -32,9 +32,9 @@ namespace locatorVars {
 const string SERVER_IP = "192.168.4.1"; // replace with aclual IP
 const int SERVER_PORT = 5005;
 
-const float ROBOT_RADIUS = 200; // avoidance
-const float ROBOT_SIZE = 200; // main body
-const float ENEMY_SIZE = 250; // main body
+const float ROBOT_RADIUS = 210; // avoidance
+const float ROBOT_SIZE = 210; // main body
+const float ENEMY_SIZE = 280; // main body
 
 int width = 3000, height = 2000; // arena size
 
@@ -175,70 +175,6 @@ Robot robotB(7, {2650,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 
 void setUpEnvironment() {
   cout << "Innit start" << endl;
-  // robotClient.sendHomingCommand();
-  // waitKey(10000);
-  // robotClient.sendCustomMoveCommand(-4750, -1500, -1890, -1945);
-  // waitKey(3000);
-  while (true) {
-    // robotClient.sendLocomotionCommand(0, 5000, 0, 3000);
-    robotClient.sendNewESPMoveCommand(125, 0, 0);
-    waitKey(300);
-  }
-  // waitKey(30000);
-  //
-
-  // waitKey(1000);
-
-  // robotClient.sendOpenLowerGrippers(true);
-  // robotClient.sendOpenUpperGrippers(true);
-  // robotClient.sendTwistOuterGrippers(false);
-
-  // waitKey(1000);
-  // robotClient.sendOpenUpperGrippers(false);
-  // robotClient.sendCustomMoveCommand(0, 5, 2, 2);
-  // waitKey(4000);
-
-  // robotClient.sendTwistOuterGrippers(true);
-  
-  // waitKey(1000);
-
-  // robotClient.sendCustomMoveCommand(0, 0, 14, 14);
-
-  // waitKey(5000);
-
-  // robotClient.sendTwistOuterGrippers(false);
-
-  // waitKey(1000);
-
-  // robotClient.sendCustomMoveCommand(0, 0, 13, 13);
-
-  // waitKey(1500);
-
-  // robotClient.sendOpenUpperGrippers(true);
-
-  // waitKey(10000);
-
-  // robotClient.sendCustomMoveCommand(0, 0, 0, 0);
-
-  // waitKey(1000000);
-
-  //
-
-  // robotClient.sendOpenUpperGrippers(true);
-
-  // robotClient.sendMoveFullCommand();
-  // robotClient.sendOpenLowerGrippers(true);
-  // robotClient.sendOpenUpperGrippers(true);
-  // waitKey(200);
-  // robotClient.sendOpenUpperGrippers(false);
-  // waitKey(200);
-  // robotClient.sendTwistOuterGrippers(true);
-  // waitKey(1000);
-  // robotClient.sendTwistOuterGrippers(false);
-  // waitKey(1000);
-  // robotClient.sendOpenLowerGrippers(false);
-  // robotClient.sendOpenUpperGrippers(false);
-
 
   locator.estimateCameraPose();
   navigator.insertElement(ramp);

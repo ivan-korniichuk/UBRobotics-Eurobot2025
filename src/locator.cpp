@@ -145,7 +145,7 @@ Point2f Locator::find(int movingMarkerId, const cv::Mat& frame) {
 
 Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
     if (!cameraPoseFixed) {
-        std::cerr << "Error: Camera pose not yet fixed. Call estimateCameraPose() first." << std::endl;
+        cerr << "Error: Camera pose not yet fixed. Call estimateCameraPose() first." << endl;
         return Pose2D{Point2f(-1.0f, -1.0f), -999.0f};
     }
 
@@ -184,7 +184,7 @@ Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
         double yaw_deg = yaw * 180.0 / CV_PI;
         
         Pose2D pose;
-        pose.position = cv::Point2f(
+        pose.position = Point2f(
             static_cast<float>(markerWorldPos.at<double>(0, 0)),
             static_cast<float>(markerWorldPos.at<double>(1, 0))
         );
