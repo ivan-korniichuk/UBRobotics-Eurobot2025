@@ -19,7 +19,7 @@ private:
     mutable mutex yawMutex;
     float yaw = -999;
     float lastYaw = -999;
-    float yawThreshold = 45.0;
+    float yawThreshold = 30.0;
 
 public:
     Locator* locator;

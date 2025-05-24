@@ -11,7 +11,7 @@ using namespace std;
 
 class Element {
 protected:
-    const float navigationOffset = 40;
+    const float navigationOffset = 45;
     vector<Point2f> border;
     vector<Point2f> obstacle;
     vector<Point2f> navigationObstacle;

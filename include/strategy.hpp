@@ -102,6 +102,7 @@ private:
     thread robotThread;
     thread enemyThread;
     atomic<bool> frameAvailable;
+    atomic<bool> aligningRobot{false};
 
     void controlRobotMovement();
     void alignRobot(const Point2f& targetPosition);

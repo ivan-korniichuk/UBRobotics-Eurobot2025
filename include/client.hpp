@@ -9,6 +9,7 @@
 #include <iostream>
 #include <cstring>
 #include <atomic>
+#include <mutex>
 
 using namespace std;
 
@@ -39,6 +40,7 @@ private:
     int serverPort;
     atomic<bool> inserted{false};
     atomic<bool> pulled{false};
+    mutex sendMutex;
 
     void sendToServer(const vector<uint8_t>& data);
     void sendCommandToESP(uint8_t espID, uint8_t cmdID, const std::vector<uint8_t>& args);

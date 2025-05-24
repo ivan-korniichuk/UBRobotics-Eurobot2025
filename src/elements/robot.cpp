@@ -32,7 +32,7 @@ void Robot::setYaw(float newYaw) {
     // Normalize yaw to [0, 360)
     newYaw = fmod(newYaw + 360.0, 360.0);
 
-    lock_guard<std::mutex> lock(yawMutex);
+    lock_guard<mutex> lock(yawMutex);
 
     float delta = fabs(newYaw - lastYaw);
     // Correct wraparound (e.g., from 359 to 1)

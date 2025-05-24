@@ -7,8 +7,8 @@ Strategy::Strategy() {}
 void Strategy::start_test() {
     // robotClient->sendMoveCommand(100, -50);
     startAsyncPositionUpdates();
-    robotClient->registerWithRPi();
-    robotClient->waitForCordSignal();  
+    // robotClient->registerWithRPi();
+    // robotClient->waitForCordSignal();  
     startTimer();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
@@ -90,6 +90,8 @@ void Strategy::runRobotProcessingLoop() {
 
         if (pose.position != Point2f(-1, -1)) {
             robot->setPosition(pose.position);
+            // cout << "strategy yaw: " << pose.yaw << endl;
+            // cout << "Robot position: " << pose.position << endl;
             robot->setYaw(pose.yaw);
         }
         // auto end = chrono::high_resolution_clock::now();
@@ -184,17 +186,16 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
 
         if (dist > 0 && dist < maxAccDistance) {
             if (targetCluster) {
-                alignRobot(targetCluster->center);
                 targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
             } else {
                 targetCluster = getClosestCluster(robot->getPosition());
-                alignRobot(targetCluster->center);
                 if (getDistance(robot->getPosition(), targetCluster->getAccessPoint(0)) < maxAccDistance) {
                     targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
                 } else if (getDistance(robot->getPosition(), targetCluster->getAccessPoint(1)) < maxAccDistance) {
                     targetCluster->setStatus(Cluster::ClusterStatus::TAKEN);
                 }
             }
+            alignRobot(targetCluster->center);
             setStatus(completeStatus);
             return;
         }
@@ -224,15 +225,14 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
 
         if (dist > 0 && dist < maxAccDistance) {
             if (targetConstructionArea) {
-                alignRobot(targetConstructionArea->center);
                 targetConstructionArea->built = true;
             } else {
                 targetConstructionArea = getClosestConstructionArea(robot->getPosition());
-                alignRobot(targetConstructionArea->center);
                 if (getDistance(robot->getPosition(), targetConstructionArea->getAccessPoint()) < maxAccDistance) {
                     targetConstructionArea->built = true;
                 }
             }
+            alignRobot(targetConstructionArea->center);
             setStatus(completeStatus);
             return;
         }
@@ -397,7 +397,7 @@ void Strategy::startTimer() {
     motionControlThread = thread([this]() {
         this_thread::sleep_for(chrono::milliseconds(100));
         while (motionRunning) {
-            cout << "Robot position: " << robot->getPosition() << endl;
+            // cout << "Robot position: " << robot->getPosition() << endl;
             controlRobotMovement();
             this_thread::sleep_for(chrono::milliseconds(50));
         }
@@ -431,6 +431,10 @@ void Strategy::startTimer() {
 }
 
 void Strategy::controlRobotMovement() {
+    if (aligningRobot.load()) {
+        return;
+    }
+
     if (targetPath.size() < 2) {
         robotClient->sendNewESPMoveCommand(0, 0, 0);
         return;
@@ -466,7 +470,7 @@ void Strategy::controlRobotMovement() {
     + 9.05225505;
 
     // float rawSpeed = 100.0f * log(0.03f * distance + 1.0f);
-    float speed = max(3.0f, min(600.0f, rawSpeed));
+    float speed = max(12.0f, min(300.0f, rawSpeed));
 
     float norm_dx = dx / distance;
     float norm_dy = -dy / distance;
@@ -483,39 +487,62 @@ void Strategy::controlRobotMovement() {
     while (deltaYaw < -180) deltaYaw += 360;
 
     cout << fixed << setprecision(2);
-    cout << "ΔYaw: " << deltaYaw << "°, localX: " << scaled_dx << ", localY: " << scaled_dy << ", robotYaw: " << robotYaw << "°\n";
+    // cout << "ΔYaw: " << deltaYaw << "°, localX: " << scaled_dx << ", localY: " << scaled_dy << ", robotYaw: " << robotYaw << "°\n";
 
     robotClient->sendNewESPMoveCommand(scaled_dx/1.2, -scaled_dy/1.2, 0);
-
-    // // float scaled_dx = dx * speed / distance;
-    // // float scaled_dy = -dy * speed / distance;
-
-    // cout << deltaYaw << "° " << scaled_dx << " " << scaled_dy << " " << robotYaw << endl;
-    // cout << dx << " " << dy << endl;
-
-    // robotClient->sendNewESPMoveCommand(scaled_dx/2, scaled_dy/2, 0);
 }
 
 void Strategy::alignRobot(const Point2f& targetPos) {
-    Point2f robotPos = robot->getPosition();
-    float robotYaw = robot->getYaw();  // already adjusted by cameraAngle
+    aligningRobot.store(true);
 
-    float dx = targetPos.x - robotPos.x;
-    float dy = targetPos.y - robotPos.y;
+    robotClient->sendNewESPMoveCommand(0, 0, 0);
+    float relativeYaw = 15.0f;
+    int tries = 0;
+    cout << "Robot alignment angle to target: " << endl;
 
-    float targetAngle = atan2(dy, dx) * 180.0 / CV_PI;
+    while (true) {
+        this_thread::sleep_for(chrono::milliseconds(50)); // just in case
+        Point2f robotPos = robot->getPosition();
+        float robotYaw = robot->getYaw();  // already adjusted by cameraAngle
+    
+        float dx = targetPos.x - robotPos.x;
+        float dy = -(targetPos.y - robotPos.y);
 
-    // Normalize targetAngle to [0, 360)
-    targetAngle = fmod(targetAngle + 360.0, 360.0);
+        float distance = sqrt(dx * dx + dy * dy);
 
-    float relativeYaw = targetAngle - robotYaw;
+        float norm_dx = dx / distance;
+        float norm_dy = -dy / distance;
+    
+        float targetAngle = atan2(norm_dy, norm_dx) * 180.0 / CV_PI;
 
-    // Normalize to [-180, 180]
-    if (relativeYaw > 180) relativeYaw -= 360;
-    if (relativeYaw < -180) relativeYaw += 360;
+        // some calculations <3
+        relativeYaw = targetAngle - robotYaw;
+        if (relativeYaw < -90) relativeYaw += 360;
 
-    cout << fixed << setprecision(2);
-    cout << "Robot alignment angle to target: " << relativeYaw 
-         << "° (Robot Yaw: " << robotYaw 
-         << "°, Target Angle: " << targetAngle << "°)\n";
+        if (relativeYaw > 180) relativeYaw -= 360;
+        if (relativeYaw < -180) relativeYaw += 360;
+    
+        // Normalize to [-180, 180]
+        // if (relativeYaw < 90) relativeYaw = 180 - relativeYaw;
+        // if (relativeYaw > 270) relativeYaw = 180 - relativeYaw;
+    
+        cout << fixed << setprecision(2);
+        cout << "Robot alignment angle to target: " << relativeYaw 
+             << "° (Robot Yaw: " << robotYaw 
+             << "°, Target Angle: " << targetAngle << "°)\n";
+            
+        if (relativeYaw <= 3.0f && relativeYaw >= -3.0f) {
+            tries++;
+            if (tries > 6) {
+                robotClient->sendNewESPMoveCommand(0, 0, 0);
+                break;
+            }
+        } else {
+            robotClient->sendNewESPMoveCommand(0, 0, relativeYaw);
+        }
+    }
+    cout << "stop rotating" << endl;
+    robotClient->sendNewESPMoveCommand(0, 0, 0);
+    this_thread::sleep_for(chrono::milliseconds(2000));
+    aligningRobot.store(false);
 }

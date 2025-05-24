@@ -22,7 +22,7 @@ void RobotClient::sendToServer(const vector<uint8_t>& data) {
     return;
   }
 
-  cout << "Connecting to " << serverIp << ":" << serverPort << "...\n";
+  // cout << "Connecting to " << serverIp << ":" << serverPort << "...\n";
 
   if (connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0) {
     cerr << "Connection to RPi failed: " << strerror(errno) << endl;
@@ -43,7 +43,7 @@ void RobotClient::sendToServer(const vector<uint8_t>& data) {
     cerr << "Read failed: " << strerror(errno) << endl;
   } else {
     buffer[received] = '\0';
-    cout << "RPi Response: " << buffer << endl;
+    // cout << "RPi Response: " << buffer << endl;
   }
 
   close(sock);
@@ -124,6 +124,7 @@ void RobotClient::sendTwistOuterGrippers(bool close) {
 }
 
 void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const vector<uint8_t>& args) {
+  lock_guard<mutex> lock(sendMutex);
   vector<uint8_t> packet;
   packet.push_back(espID);
   packet.push_back(cmdID);
@@ -133,6 +134,7 @@ void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const vector<ui
 }
 
 void RobotClient::sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn) {
+  return; // TODO: remove this line
   vector<uint8_t> args;
 
   auto append16 = [&](int16_t val) {
