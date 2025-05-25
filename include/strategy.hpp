@@ -104,6 +104,9 @@ private:
     atomic<bool> frameAvailable;
     atomic<bool> aligningRobot{false};
 
+    atomic<bool> robotFrameReady{false};
+    atomic<bool> enemyFrameReady{false};
+
     void controlRobotMovement();
     void alignRobot(const Point2f& targetPosition);
     void setTargetPath(vector<Point2f> path);

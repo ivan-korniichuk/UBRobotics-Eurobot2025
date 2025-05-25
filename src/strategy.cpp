@@ -59,26 +59,34 @@ void Strategy::startAsyncPositionUpdates() {
 void Strategy::runCameraLoop() {
     Mat frame;
     while (running) {
-        // auto start = chrono::high_resolution_clock::now();
-        if (cap.read(frame)) {
-            {
-                lock_guard<mutex> lock(frameMutex);
-                sharedFrame = frame.clone();
-                frameAvailable = true;
-            }
+        auto start = chrono::high_resolution_clock::now();
+        bool frameRead;
+
+        {
+            lock_guard<mutex> lock(frameMutex);
+            frameRead = cap.read(sharedFrame);
+        }
+
+        if (frameRead) {
+            robotFrameReady.store(true);
+            enemyFrameReady.store(true);
         }
         
-        // auto end = chrono::high_resolution_clock::now();
-        // auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
-        // cout << "[Camera] Loop duration: " << duration / 1000.0 << " ms" << endl;
-        this_thread::sleep_for(chrono::milliseconds(1));
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Camera] Loop duration: " << duration / 1000.0 << " ms" << endl;
+        // this_thread::sleep_for(chrono::milliseconds(1));
     }
 }
 
 void Strategy::runRobotProcessingLoop() {
     while (running) {
-        // auto start = chrono::high_resolution_clock::now();
-        if (!frameAvailable) continue;
+        auto start = chrono::high_resolution_clock::now();
+        if (!robotFrameReady.load()) {
+            this_thread::sleep_for(chrono::milliseconds(1));
+            continue;
+        }
+        robotFrameReady.store(false);
 
         Mat frameCopy;
         {
@@ -94,18 +102,22 @@ void Strategy::runRobotProcessingLoop() {
             // cout << "Robot position: " << pose.position << endl;
             robot->setYaw(pose.yaw);
         }
-        // auto end = chrono::high_resolution_clock::now();
-        // auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
-        // cout << "[Robot] Loop duration: " << duration / 1000.0 << " ms" << endl;
-        this_thread::sleep_for(chrono::milliseconds(1));
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Robot] Loop duration: " << duration / 1000.0 << " ms" << endl;
+        // this_thread::sleep_for(chrono::milliseconds(1));
     }
 }
 
 void Strategy::runEnemyProcessingLoop() {
     while (running) {
-        // auto start = chrono::high_resolution_clock::now();
+        auto start = chrono::high_resolution_clock::now();
 
-        if (!frameAvailable) continue;
+        if (!enemyFrameReady.load()) {
+            this_thread::sleep_for(chrono::milliseconds(1));
+            continue;
+        }
+        enemyFrameReady.store(false);
 
         Mat frameCopy;
         {
@@ -126,10 +138,10 @@ void Strategy::runEnemyProcessingLoop() {
                 }
             }
         }
-        // auto end = chrono::high_resolution_clock::now();
-        // auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
-        // cout << "[Enemy] Loop duration: " << duration / 1000.0 << " ms" << endl;
-        this_thread::sleep_for(chrono::milliseconds(20));
+        auto end = chrono::high_resolution_clock::now();
+        auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        cout << "[Enemy] Loop duration: " << duration / 1000.0 << " ms" << endl;
+        this_thread::sleep_for(chrono::milliseconds(10));
     }
 }
 
@@ -234,13 +246,10 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
             }
             alignRobot(targetConstructionArea->center);
             setStatus(completeStatus);
+
+            visualiser->score += 12; // Increment score for successful construction
             return;
         }
-
-        // {
-        //     lock_guard<mutex> lock(visualiserMutex);
-        //     visualiser->drawImage();
-        // }
     }
 }
 
@@ -412,6 +421,7 @@ void Strategy::startTimer() {
             visualiser->setElapsedTime(seconds);
 
             if (!simasOutDone && seconds >= 90) {
+                visualiser->addScore(55); // Simas out bonus
                 cout << "Simas out" << endl;
                 simasOutDone = true;
             }

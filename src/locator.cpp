@@ -61,9 +61,12 @@ void Locator::estimateCameraPose() {
 
     cout << "Starting pose estimation over " << POSE_SAMPLE_LIMIT << " frames..." << endl;
 
+    accumulatedR = Mat::zeros(3, 3, CV_64F);
+    accumulatedT = Mat::zeros(3, 1, CV_64F);
+    poseSamplesCollected = 0;
+
     while (poseSamplesCollected < POSE_SAMPLE_LIMIT) {
         if (!cap.read(frame)) continue;
-        // frame = imread("/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/extra/img_00.jpg");
 
         cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
         detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
@@ -98,6 +101,31 @@ void Locator::estimateCameraPose() {
     tvecMain = accumulatedT / POSE_SAMPLE_LIMIT;
     cameraPoseFixed = true;
     cout << "Camera pose fixed." << endl;
+
+    bool homographyDone = false;
+    while (!homographyDone) {
+        if (!cap.read(frame)) continue;
+        cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+        detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
+
+        vector<Point2f> imgPoints, worldPoints;
+        for (size_t i = 0; i < markerIds.size(); ++i) {
+            int id = markerIds[i];
+            if (id >= 20 && id <= 23) {
+                int mIndex = id % 20;
+                Point2f center = (markerCorners[i][0] + markerCorners[i][1] +
+                                  markerCorners[i][2] + markerCorners[i][3]) / 4;
+                imgPoints.push_back(center);
+                worldPoints.push_back(Point2f(realMPoints[mIndex].x, realMPoints[mIndex].y));
+            }
+        }
+        if (imgPoints.size() >= 4) {
+            arenaHomography = findHomography(imgPoints, worldPoints);
+            hasArenaHomography = true;
+            cout << "Arena homography fixed." << endl;
+            homographyDone = true;
+        }
+    }
     cap.release();
 }
 
@@ -144,52 +172,58 @@ Point2f Locator::find(int movingMarkerId, const cv::Mat& frame) {
 }
 
 Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
-    if (!cameraPoseFixed) return Pose2D{Point2f(-1, -1), -999.0f};
+    if (!cameraPoseFixed || !hasArenaHomography)
+        return Pose2D{Point2f(-1, -1), -999.0f};
 
     Mat grayFrame;
     vector<vector<Point2f>> markerCorners;
     vector<int> markerIds;
     vector<vector<Point2f>> rejectedCandidates;
+
     cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
     detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
 
-    // Gather arena board marker correspondences for homography
-    vector<Point2f> imgPoints;
-    vector<Point2f> worldPoints;
-    for (size_t i = 0; i < markerIds.size(); ++i) {
-        int id = markerIds[i];
-        if (id >= 20 && id <= 23) {
-            // Board marker index
-            int mIndex = id % 20;
-            Point2f center = (markerCorners[i][0] + markerCorners[i][1] + markerCorners[i][2] + markerCorners[i][3]) / 4;
-            imgPoints.push_back(center);
-            worldPoints.push_back(Point2f(realMPoints[mIndex].x, realMPoints[mIndex].y));
-        }
-    }
+    // ===== PnP for position =====
+    vector<Point3f> realMarkerPoints = {
+        {-movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, movingMarker / 2, 0},
+        { movingMarker / 2, -movingMarker / 2, 0},
+        {-movingMarker / 2, -movingMarker / 2, 0}
+    };
 
-    // Find moving marker in detected markers
+    Mat rvecMarker, tvecMarker;
+    bool markerDetected = false;
     vector<Point2f> markerPts;
+
     for (size_t i = 0; i < markerIds.size(); ++i) {
         if (markerIds[i] == movingMarkerId) {
+            markerDetected = solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker, false, SOLVEPNP_IPPE_SQUARE);
             markerPts = markerCorners[i];
             break;
         }
     }
-    if (imgPoints.size() < 4 || markerPts.size() != 4) return Pose2D{Point2f(-1, -1), -999.0f};
 
-    // Estimate homography from image to world
-    Mat H = findHomography(imgPoints, worldPoints);
+    if (!markerDetected || markerPts.size() != 4) return Pose2D{Point2f(-1, -1), -999.0f};
 
-    // Transform marker center and edge points to world
+    // Arena X/Y position from PnP
+    Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
+    Point2f arenaPos(
+        static_cast<float>(markerWorldPos.at<double>(0, 0)),
+        static_cast<float>(markerWorldPos.at<double>(1, 0))
+    );
+
+    // ===== Homography for yaw =====
+    // Find yaw direction vector in arena using homography
+    // (Uses image points, so is robust to marker tilting/rotation relative to camera)
     Point2f markerCenter = (markerPts[0] + markerPts[1] + markerPts[2] + markerPts[3]) / 4;
-    vector<Point2f> camPts = {markerCenter, (markerPts[0] + markerPts[1]) / 2};
+    vector<Point2f> camPts = {markerCenter, (markerPts[0] + markerPts[1]) / 2}; // top edge direction
     vector<Point2f> worldPts;
-    perspectiveTransform(camPts, worldPts, H);
+    perspectiveTransform(camPts, worldPts, arenaHomography);
 
-    // Compute yaw in the arena plane
     Point2f dir = worldPts[1] - worldPts[0];
     float yaw = atan2(dir.y, dir.x) * 180.0f / CV_PI;
-    return Pose2D{worldPts[0], yaw};
+
+    return Pose2D{arenaPos, yaw};
 }
 
 Point2f Locator::find(int movingMarkerId) {
