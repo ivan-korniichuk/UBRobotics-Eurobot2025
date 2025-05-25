@@ -47,40 +47,6 @@ long maxSpeed;
 int speedChangeDelay;
 bool dir = false;
 
-// TMC2209 Driver Initiliasiationn with two Serial buses
-HardwareSerial TMCSerial_1(2); 
-
-// TMC2209Stepper V_UPPER_LEVEL(&TMCSerial_1, R_SENSE, 0b11);
-
-HardwareSerial TMCSerial_2(1); 
-
-TMC2209Stepper V_RIGHT_TWIST(&TMCSerial_1, R_SENSE, 0b00);
-TMC2209Stepper V_LEFT_GRIPPER(&TMCSerial_1, R_SENSE, 0b10);
-TMC2209Stepper V_LOWER_LEVEL(&TMCSerial_1, R_SENSE, 0b11);
-
-TMC2209Stepper V_UPPER_LEVEL(&TMCSerial_2, R_SENSE, 0b00);
-TMC2209Stepper V_RIGHT_GRIPPER(&TMCSerial_2, R_SENSE, 0b10);
-TMC2209Stepper V_LEFT_TWIST(&TMCSerial_2, R_SENSE, 0b11);
-
-
-struct MotorState {
-  TMC2209Stepper* driver;
-  long current_position = 0;
-  long target_position = 0;
-  int max_velocity = 0;
-  bool is_active = false;
-};
-
-MotorState motor_states[] = {
-  { &V_LOWER_LEVEL },
-  { &V_UPPER_LEVEL },
-  { &V_LEFT_TWIST },
-  { &V_RIGHT_TWIST },
-  { &V_LEFT_GRIPPER },
-  { &V_RIGHT_GRIPPER }
-};
-
-const int NUM_MOTORS = sizeof(motor_states) / sizeof(MotorState);
 
 // Locomotion Parameters
 float MOT_1_speed = 0;
@@ -120,17 +86,8 @@ struct Recive_Data {
 };
 Recive_Data data;
 
-
-struct MotorState {
-  TMC2209Stepper* driver;
-  long current_position = 0;
-  long target_position = 0;
-  int max_velocity = 0;
-  bool is_active = false;
-};
-
-
 bool BTN_LATCH = 0; 
+
 
 long current_position = 0; // You can manage this per motor if needed
 
@@ -151,16 +108,6 @@ TMC2209Stepper V_UPPER_LEVEL(&TMCSerial_2, R_SENSE, 0b00);
 TMC2209Stepper V_RIGHT_GRIPPER(&TMCSerial_2, R_SENSE, 0b10);
 TMC2209Stepper V_LEFT_TWIST(&TMCSerial_2, R_SENSE, 0b11);
 
-MotorState motor_states[] = {
-  { &V_LOWER_LEVEL },
-  { &V_UPPER_LEVEL },
-  { &V_LEFT_TWIST },
-  { &V_RIGHT_TWIST },
-  { &V_LEFT_GRIPPER },
-  { &V_RIGHT_GRIPPER }
-};
-
-const int NUM_MOTORS = sizeof(motor_states) / sizeof(MotorState);
 
 void setup() {
   Serial.begin(115200);           // Initialize hardware serial for debugging
@@ -180,6 +127,10 @@ void setup() {
     digitalWrite(EN_PINS[i], LOW); 
   }
   
+
+
+
+  
   // Initilize TMC2209 board  
   initDrivers();
   delay(100);
@@ -198,11 +149,63 @@ void setup() {
   I2C.onReceive(onReceive);
   I2C.onRequest(onRequest);
   I2C.begin((uint8_t)I2C_DEV_ADDR, I2C_SDA, I2C_SCL, I2C_FREQ);
+  // delay(2000);
+  // performHoming(V_LEFT_TWIST, 160);
+  // delay(2000);
+  // // performHoming(V_LOWER_LEVEL, 260);
+  // // delay(2000);
+  // // performHoming(V_UPPER_LEVEL, 260);
+  // delay(2000);
+  // performHoming(V_RIGHT_TWIST, 260);
+  // // V_RIGHT_TWIST.VACTUAL(5000);
+  // delay(2000);
+
+  // // V_LEFT_TWIST.XACTUAL(-5000);
+  // moveToPosition(V_LEFT_TWIST, -500);  // Move to 800 steps
+  // // moveToPosition(V_UPPER_LEVEL, -500);  // Move to 800 steps
+  // moveToPosition(V_RIGHT_TWIST, -1000);  // Move to 800 steps
+  // delay(1000);
+
+  // homeAll();
+  
+
 }
 
 void loop() {
-  updateAllMotors();
-  delay(2);  // prevent overload, tune if needed
+  if (data.BTN_R_state == LOW){
+      delay(2000);
+    performHoming(V_LEFT_TWIST, 180);
+    delay(2000);
+    performHoming(V_RIGHT_TWIST, 250);
+    delay(2000);
+    performHoming(V_UPPER_LEVEL, 250);
+    delay(2000);
+    performHoming(V_LOWER_LEVEL, 25
+    0);
+    delay(2000);
+    
+    // V_RIGHT_TWIST.VACTUAL(5000);
+    delay(2000);
+  }
+  if (data.BTN_C_state == LOW){
+  // V_LEFT_TWIST.XACTUAL(-5000);
+    moveToPosition(V_LOWER_LEVEL, -4900, 10000);  // Move to 800 steps
+    moveToPosition(V_UPPER_LEVEL, -1300, 2600);  // Move to 800 steps
+    moveToPosition(V_LEFT_TWIST, -1300, 5000);  // Move to 800 steps
+    
+    moveToPosition(V_RIGHT_TWIST, -2000,4300);  // Move to 800 steps
+    delay(1000);
+  }
+  delay(10);
+  if (data.BTN_L_state == LOW){
+  // V_LEFT_TWIST.XACTUAL(-5000);
+    moveToPosition(V_LOWER_LEVEL, -4600*0.75, 10000);  // Move to 800 steps
+    moveToPosition(V_UPPER_LEVEL, 1300*0.75, 2600);  // Move to 800 steps
+    moveToPosition(V_RIGHT_TWIST, -2000*0.75,4300);  // Move to 800 steps
+    delay(1000);
+  }
+   
+
 }
 
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
@@ -230,6 +233,58 @@ float roundToNearest10(float num) {
     return round(num / 10.0) * 10;
 }
 
+
+// void performHoming(TMC2209Stepper &driver, int threshold) {
+//   // Serial.println("Starting sensorless homing...");
+//   // driver.shaft(true);
+//   driver.VACTUAL(7500);
+
+//   delay(100);
+//   Serial.print("   |SG_RESULT: ");
+//     Serial.println(driver.SG_RESULT());
+//   while (driver.SG_RESULT()>threshold) {
+    
+//     driver.VACTUAL(7500);
+//   }
+
+//   driver.VACTUAL(0);
+//   delay(500);
+//   HOMED[0] = true;
+
+//   // V_LEFT_TWIST.shaft(false);
+//   // while (digitalRead(DIAG_PINS[0]) == LOW) {
+//   //   V_LEFT_TWIST.VACTUAL(5000);
+//   // }
+
+//   // V_LEFT_TWIST.VACTUAL(0);
+//   Serial.println("Homing complete.");
+// // }
+// void performHoming(TMC2209Stepper &driver, int threshold) {
+//   Serial.println("Starting sensorless homing...");
+
+//   // Step 1: Move away from the homing direction briefly
+//   driver.VACTUAL(-5000);  // Move backward a little
+//   delay(350);
+//   driver.VACTUAL(0);
+//   delay(200);
+
+//   // Step 2: Move forward until stall is detected
+//   driver.VACTUAL(7500);
+
+//   delay(450); // let it spin up
+
+//   while (driver.SG_RESULT() > threshold) {
+//     driver.VACTUAL(7500); // keep pushing forward
+//     // Optional: add timeout here for safety
+//   }
+
+//   driver.VACTUAL(0);
+//   delay(500);
+
+//   HOMED[0] = true;
+
+//   Serial.println("Homing complete.");
+// }
 void onRequest() {
   I2C.printf("%.*s", length, buffer); 
   I2C.print('\0');
@@ -238,82 +293,14 @@ void onRequest() {
 }
 
 void onReceive(int len) {
-  if (len <= 1) return;
-  if (len > sizeof(buffer)) len = sizeof(buffer);
-
-  I2C.readBytes(buffer, len);
-
-  uint8_t cmd = buffer[1];
-  Serial.printf("[I2C] Raw bytes (%d): ", len);
-  for (int i = 0; i < len; ++i) Serial.printf("0x%02X ", buffer[i]);
-  Serial.println();
-  Serial.printf("[I2C] CMD_ID: %d\n", cmd);
-
-  switch (cmd) {
-    case 1:
-      Serial.println("I2C CMD: Homing");
-      homeAll();
-      break;
-
-    case 2:
-      Serial.println("I2C CMD: Move Full");
-      // moveToPosition(V_LOWER_LEVEL, -4900, 10000);
-      // moveToPosition(V_UPPER_LEVEL, -1300, 2600);
-      // moveToPosition(V_LEFT_TWIST, -1300, 5000);
-      // moveToPosition(V_RIGHT_TWIST, -2000, 4300);
-      setMotorTarget(motor_states[0], -4900, 10000);
-      setMotorTarget(motor_states[1], -1300, 2600);
-      setMotorTarget(motor_states[2], -1300, 5000);
-      setMotorTarget(motor_states[3], -2000, 4300);
-      updateAllMotors();
-      break;
-
-    case 3:
-      Serial.println("I2C CMD: Move Partial");
-      // moveToPosition(V_LOWER_LEVEL, -4600 * 0.75, 10000);
-      // moveToPosition(V_UPPER_LEVEL, 1300 * 0.75, 2600);
-      // moveToPosition(V_RIGHT_TWIST, -2000 * 0.75, 4300);
-      setMotorTarget(motor_states[0], -4600 * 0.75, 10000);
-      setMotorTarget(motor_states[1], 1300 * 0.75, 2600);
-      // setMotorTarget(motor_states[2], pos3, spd3/
-      setMotorTarget(motor_states[3], -2000 * 0.75, 4300);
-      updateAllMotors();
-      break;
-
-    case 4:
-      if (len >= 18) {
-        int16_t pos1 = (buffer[2] << 8) | buffer[3];
-        int16_t pos2 = (buffer[4] << 8) | buffer[5];
-        int16_t pos3 = (buffer[6] << 8) | buffer[7];
-        int16_t pos4 = (buffer[8] << 8) | buffer[9];
-        int16_t spd1 = (buffer[10] << 8) | buffer[11];
-        int16_t spd2 = (buffer[12] << 8) | buffer[13];
-        int16_t spd3 = (buffer[14] << 8) | buffer[15];
-        int16_t spd4 = (buffer[16] << 8) | buffer[17];
-
-        Serial.printf("I2C CMD: Custom Move\n");
-        Serial.printf("   L: %d @%d\n   U: %d @%d\n  LT: %d @%d\n  RT: %d @%d\n",
-                      pos1, spd1, pos2, spd2, pos3, spd3, pos4, spd4);
-
-        // moveToPosition(V_LOWER_LEVEL, pos1, spd1);
-        // moveToPosition(V_UPPER_LEVEL, pos2, spd2);
-        // moveToPosition(V_LEFT_TWIST, pos3, spd3);
-        // moveToPosition(V_RIGHT_TWIST, pos4, spd4);
-        setMotorTarget(motor_states[0], pos1, spd1);
-        setMotorTarget(motor_states[1], pos2, spd2);
-        setMotorTarget(motor_states[2], pos3, spd3);
-        setMotorTarget(motor_states[3], pos4, spd4);
-        updateAllMotors();
-      } else {
-        Serial.println("Invalid length for CMD 4");
-      }
-      break;
-
-    default:
-      Serial.printf("[I2C] Unknown command: %d\n", cmd);
+  length = len;  // cat is cat, okay?
+  Serial.printf("onReceiveCB[%d]: \n", len);
+  while (I2C.available()) {
+    I2C.readBytes(buffer, len);
+    log_print_buf(buffer, len);
+    Serial.printf("%s\n", buffer);
   }
-} 
-
+}
 void performHoming(TMC2209Stepper &driver, int threshold) {
   Serial.println("Starting sensorless homing...");
 
@@ -378,10 +365,10 @@ void homeAll(){
   performHoming(V_LEFT_TWIST, 180);
   restDrivers();
   delay(2000);
-  performHoming(V_RIGHT_TWIST, 250);
+  performHoming(V_RIGHT_TWIST, 225);
   restDrivers();
   delay(2000);
-  performHoming(V_UPPER_LEVEL, 250);
+  performHoming(V_UPPER_LEVEL, 320);
   restDrivers();
   delay(2000);
   restDrivers();
@@ -463,25 +450,35 @@ void initDrivers(){
   V_RIGHT_TWIST.semax(2);
 
 }
-void setMotorTarget(MotorState &motor, long target, int velocity) {
-  motor.target_position = target;
-  motor.max_velocity = velocity;
-  motor.is_active = true;
-}
 
-void updateAllMotors() {
-  for (int i = 0; i < NUM_MOTORS; ++i) {
-    MotorState &m = motor_states[i];
-    if (!m.is_active) continue;
+void moveToPosition(TMC2209Stepper &driver, long target_position, int v) {
+  current_position = 0;
+  long error = target_position - current_position;
+  int velocity = 0;
 
-    long error = m.target_position - m.current_position;
-    if (abs(error) > 0) {
-      int step = (error > 0) ? 1 : -1;
-      m.current_position += step;
-      m.driver->VACTUAL((error > 0) ? m.max_velocity : -m.max_velocity);
+  while (abs(error) > 0) {
+    if (error > 0) {
+      velocity = v; // Move forward
+      current_position= current_position+1;
     } else {
-      m.driver->VACTUAL(0);
-      m.is_active = false;
+      velocity = -v; // Move backward
+      current_position=current_position-1;
     }
+
+    driver.VACTUAL(velocity);
+    Serial.print("VACTUAL: ");
+    Serial.print(driver.VACTUAL());
+    Serial.print(" Position: ");
+    Serial.print(current_position);
+    Serial.print(" Error: ");
+    Serial.println(error);
+    delayMicroseconds(200);  // Slow down loop to let motor react
+    error = target_position - current_position;
   }
+
+  // Ensure the motor stops
+  driver.VACTUAL(0);
+
+  // Small delay to let the command take effect
+  delay(10);
 }
