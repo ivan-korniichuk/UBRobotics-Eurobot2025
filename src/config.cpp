@@ -32,9 +32,9 @@ namespace locatorVars {
 const string SERVER_IP = "192.168.4.1"; // replace with aclual IP
 const int SERVER_PORT = 5005;
 
-const float ROBOT_RADIUS = 200; // avoidance
-const float ROBOT_SIZE = 200; // main body
-const float ENEMY_SIZE = 250; // main body
+const float ROBOT_RADIUS = 205; // avoidance
+const float ROBOT_SIZE = 205; // main body
+const float ENEMY_SIZE = 280; // main body
 
 int width = 3000, height = 2000; // arena size
 
@@ -117,22 +117,22 @@ Element constBEdgeEl(constBEdgeVec, Scalar(255, 0, 0), ROBOT_RADIUS);
 
 // Yellow
 vector<Point2f> constructionY1 = { Point2f(1600, 50), Point2f(1600, 200), Point2f(1950, 200), Point2f(1950, 50) };
-ConstructionArea constructionAreaY1(constructionY1, Scalar(0, 0, 255), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
+ConstructionArea constructionAreaY1(constructionY1, Scalar(0, 0, 50), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
 
 vector<Point2f> constructionY2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
-ConstructionArea constructionAreaY2(constructionY2, Scalar(0, 0, 255), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
+ConstructionArea constructionAreaY2(constructionY2, Scalar(0, 0, 50), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
 
 vector<Point2f> constructionY3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
-ConstructionArea constructionAreaY3(constructionY3, Scalar(0, 0, 255), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+ConstructionArea constructionAreaY3(constructionY3, Scalar(0, 0, 50), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
 
 vector<Point2f> constructionY4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
-ConstructionArea constructionAreaY4(constructionY4, Scalar(0, 0, 255), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+ConstructionArea constructionAreaY4(constructionY4, Scalar(0, 0, 50), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
 
 vector<Point2f> constructionY5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
-ConstructionArea constructionAreaY5(constructionY5, Scalar(0, 0, 255), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
+ConstructionArea constructionAreaY5(constructionY5, Scalar(0, 0, 50), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
 
 vector<Point2f> constructionY6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
-ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 255), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
+ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 50), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
 
 
 // vector<Point2f> areaBSideVec = { Point2f(2550, 650), Point2f(2550, 1100), Point2f(3000, 1100), Point2f(3000, 650) };
@@ -142,22 +142,29 @@ ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 255), Point2f(2
 
 // Blue
 vector<Point2f> constructionB1 = { Point2f(2800, 700), Point2f(2800, 1050), Point2f(2950, 1050), Point2f(2950, 700) };
-ConstructionArea constructionAreaB1(constructionB1, Scalar(0, 0, 255), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
+ConstructionArea constructionAreaB1(constructionB1, Scalar(0, 0, 50), Point2f(2575, 875), 0, Point2f(2725, 875), ROBOT_RADIUS, "1");
 
-vector<Point2f> constructionB2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
-ConstructionArea constructionAreaB2(constructionB2, Scalar(0, 0, 255), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
+vector<Point2f> constructionB2 = { Point2f(2550, 700), Point2f(2550, 1050), Point2f(2700, 1050), Point2f(2700, 700) };
+ConstructionArea constructionAreaB2(constructionB2, Scalar(0, 0, 50), Point2f(2325, 875), 0, Point2f(2175, 875), ROBOT_RADIUS, "2");
 
-vector<Point2f> constructionB3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
-ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 255), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+vector<Point2f> constructionB3 = { Point2f(1050, 50), Point2f(1050, 200), Point2f(1400, 200), Point2f(1400, 50) };
+ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(1225, 425), 0, Point2f(1225, 275), ROBOT_RADIUS, "3");
 
-vector<Point2f> constructionB4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
-ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 255), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+vector<Point2f> constructionB4 = { Point2f(1050, 300), Point2f(1050, 450), Point2f(1400, 450), Point2f(1400, 300) };
+ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(1225, 675), 0, Point2f(1225, 525), ROBOT_RADIUS, "4");
 
-vector<Point2f> constructionB5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
-ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 255), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
 
-vector<Point2f> constructionB6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
-ConstructionArea constructionAreaB6(constructionB6, Scalar(0, 0, 255), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
+// vector<Point2f> constructionB3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
+// ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+
+// vector<Point2f> constructionB4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
+// ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+
+vector<Point2f> constructionB5 = { Point2f(2600, 50), Point2f(2600, 200), Point2f(2950, 200), Point2f(2950, 50) };
+ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 50), Point2f(2775, 425), 0, Point2f(2775, 275), ROBOT_RADIUS, "5");
+
+vector<Point2f> constructionB6 = { Point2f(600, 50), Point2f(600, 200), Point2f(950, 200), Point2f(950, 50) };
+ConstructionArea constructionAreaB6(constructionB6, Scalar(0, 0, 50), Point2f(775, 425), 0, Point2f(775, 275), ROBOT_RADIUS, "6");
 
 Visualiser visualiser(height, width);
 
@@ -175,50 +182,6 @@ Robot robotB(7, {2650,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 
 void setUpEnvironment() {
   cout << "Innit start" << endl;
-  // robotClient.sendHomingCommand();
-  // waitKey(10000);
-  // robotClient.sendCustomMoveCommand(-4750, -1500, -1890, -1945);
-
-  robotClient.sendOpenLowerGrippers(true);
-  robotClient.sendOpenUpperGrippers(true);
-
-  waitKey(2000);
-
-  robotClient.sendOpenUpperGrippers(false);
-
-  waitKey(1000);
-
-  robotClient.sendCustomMoveCommand(0, 950, 700, 700);
-
-  waitKey(10000);
-
-  robotClient.sendTwistOuterGrippers(true);
-
-  waitKey(1000);
-
-  robotClient.sendCustomMoveCommand(0, -950, 800, 800);
-
-  waitKey(10000);
-
-  robotClient.sendTwistOuterGrippers(false);
-
-  waitKey(1000);
-
-  // robotClient.sendOpenUpperGrippers(true);
-
-  // robotClient.sendMoveFullCommand();
-  // robotClient.sendOpenLowerGrippers(true);
-  // robotClient.sendOpenUpperGrippers(true);
-  // waitKey(200);
-  // robotClient.sendOpenUpperGrippers(false);
-  // waitKey(200);
-  // robotClient.sendTwistOuterGrippers(true);
-  // waitKey(1000);
-  // robotClient.sendTwistOuterGrippers(false);
-  // waitKey(1000);
-  // robotClient.sendOpenLowerGrippers(false);
-  // robotClient.sendOpenUpperGrippers(false);
-
 
   locator.estimateCameraPose();
   navigator.insertElement(ramp);

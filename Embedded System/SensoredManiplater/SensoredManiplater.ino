@@ -47,6 +47,40 @@ long maxSpeed;
 int speedChangeDelay;
 bool dir = false;
 
+// TMC2209 Driver Initiliasiationn with two Serial buses
+HardwareSerial TMCSerial_1(2); 
+
+// TMC2209Stepper V_UPPER_LEVEL(&TMCSerial_1, R_SENSE, 0b11);
+
+HardwareSerial TMCSerial_2(1); 
+
+TMC2209Stepper V_RIGHT_TWIST(&TMCSerial_1, R_SENSE, 0b00);
+TMC2209Stepper V_LEFT_GRIPPER(&TMCSerial_1, R_SENSE, 0b10);
+TMC2209Stepper V_LOWER_LEVEL(&TMCSerial_1, R_SENSE, 0b11);
+
+TMC2209Stepper V_UPPER_LEVEL(&TMCSerial_2, R_SENSE, 0b00);
+TMC2209Stepper V_RIGHT_GRIPPER(&TMCSerial_2, R_SENSE, 0b10);
+TMC2209Stepper V_LEFT_TWIST(&TMCSerial_2, R_SENSE, 0b11);
+
+
+struct MotorState {
+  TMC2209Stepper* driver;
+  long current_position = 0;
+  long target_position = 0;
+  int max_velocity = 0;
+  bool is_active = false;
+};
+
+MotorState motor_states[] = {
+  { &V_LOWER_LEVEL },
+  { &V_UPPER_LEVEL },
+  { &V_LEFT_TWIST },
+  { &V_RIGHT_TWIST },
+  { &V_LEFT_GRIPPER },
+  { &V_RIGHT_GRIPPER }
+};
+
+const int NUM_MOTORS = sizeof(motor_states) / sizeof(MotorState);
 
 // Locomotion Parameters
 float MOT_1_speed = 0;
@@ -128,7 +162,6 @@ MotorState motor_states[] = {
 
 const int NUM_MOTORS = sizeof(motor_states) / sizeof(MotorState);
 
-
 void setup() {
   Serial.begin(115200);           // Initialize hardware serial for debugging
   delay(100);
@@ -168,7 +201,8 @@ void setup() {
 }
 
 void loop() {
-  delay(10);
+  updateAllMotors();
+  delay(2);  // prevent overload, tune if needed
 }
 
 void OnDataRecv(const esp_now_recv_info_t *info, const uint8_t *incomingData, int len) {
@@ -220,6 +254,7 @@ void onReceive(int len) {
       Serial.println("I2C CMD: Homing");
       homeAll();
       break;
+
     case 2:
       Serial.println("I2C CMD: Move Full");
       // moveToPosition(V_LOWER_LEVEL, -4900, 10000);
@@ -231,8 +266,8 @@ void onReceive(int len) {
       setMotorTarget(motor_states[2], -1300, 5000);
       setMotorTarget(motor_states[3], -2000, 4300);
       updateAllMotors();
-      
       break;
+
     case 3:
       Serial.println("I2C CMD: Move Partial");
       // moveToPosition(V_LOWER_LEVEL, -4600 * 0.75, 10000);
@@ -244,8 +279,9 @@ void onReceive(int len) {
       setMotorTarget(motor_states[3], -2000 * 0.75, 4300);
       updateAllMotors();
       break;
+
     case 4:
-      if (len >= 18) { // 1 dummy + 1 cmd + 8x int16 = 18 bytes
+      if (len >= 18) {
         int16_t pos1 = (buffer[2] << 8) | buffer[3];
         int16_t pos2 = (buffer[4] << 8) | buffer[5];
         int16_t pos3 = (buffer[6] << 8) | buffer[7];
@@ -272,10 +308,11 @@ void onReceive(int len) {
         Serial.println("Invalid length for CMD 4");
       }
       break;
+
     default:
       Serial.printf("[I2C] Unknown command: %d\n", cmd);
   }
-}
+} 
 
 void performHoming(TMC2209Stepper &driver, int threshold) {
   Serial.println("Starting sensorless homing...");
@@ -448,4 +485,3 @@ void updateAllMotors() {
     }
   }
 }
-

@@ -73,6 +73,23 @@
     "thread": "cpp",
     "shared_mutex": "cpp",
     "fstream": "cpp",
-    "locale": "cpp"
+    "locale": "cpp",
+    "__locale": "cpp",
+    "__tree": "cpp",
+    "bitset": "cpp",
+    "cstdarg": "cpp",
+    "ios": "cpp",
+    "print": "cpp",
+    "any": "cpp",
+    "cinttypes": "cpp",
+    "codecvt": "cpp",
+    "coroutine": "cpp",
+    "csignal": "cpp",
+    "forward_list": "cpp",
+    "unordered_set": "cpp",
+    "source_location": "cpp",
+    "stdfloat": "cpp",
+    "cfenv": "cpp",
+    "typeindex": "cpp"
   }
 }

@@ -6,6 +6,8 @@
 #include "elements/enemy.hpp"
 #include "elements/construction_area.hpp"
 #include <opencv2/opencv.hpp>
+#include <mutex>
+#include <atomic>
 
 using namespace std;
 using namespace cv;
@@ -59,7 +61,13 @@ public:
     Mat latestFrame;
     mutex frameMutex;
 
+    atomic<int> score{0};
+
+    float elapsedTime = 0.0f;
+
     Visualiser(int height, int width, Scalar color = Scalar(60, 60, 30));
     void updateFrame();
     void drawImage();
+    void setElapsedTime(float time);
+    void addScore(int newScore);
 };

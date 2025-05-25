@@ -121,6 +121,7 @@ vector<Point2f> Navigator::navigate(const Point2f& start, const Point2f& end) {
     vector<vector<Point2f>> navigators, obstacles;
 
     obstacles.push_back(enemy->getObstacle());
+    navigators.push_back(enemy->getNavigator());
 
     for (Element& el : stationaryElements) {
         obstacles.push_back(el.getObstacle());

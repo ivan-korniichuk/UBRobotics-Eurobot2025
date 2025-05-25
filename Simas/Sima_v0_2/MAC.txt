@@ -1,0 +1,14 @@
+Sima
+48:ca:43:56:7e:40 (01-purple)
+48:ca:43:56:7f:34 (02-red)
+48:ca:43:56:7e:80 (03-blue)
+48:ca:43:56:8a:c0 (04-yellow)
+
+SuperStar
+48:ca:43:56:8a:70 (05-brown)
+48:ca:43:56:7e:dc (06-orange)
+
+Extra: 48:ca:43:56:7f:28
+
+14: f0:f5:bd:52:a5:70
+6:  f0:f5:bd:52:a5:74

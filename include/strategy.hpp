@@ -74,18 +74,41 @@ public:
     Strategy();
 
     void start_test();
-    void updatePositions();
+    // void updatePositions();
     void changeStatus(StrategyStatus newStatus);
     string strategyStatusToString(StrategyStatus status);
     void startAsyncPositionUpdates();
     void stopAsyncPositionUpdates();
+    void startTimer();
 
 private:
     Cluster* targetCluster = nullptr;
     Cluster* targetCluster1 = nullptr;
     Cluster* targetCluster2 = nullptr;
     ConstructionArea* targetConstructionArea = nullptr;
+    atomic<bool> running;
+    VideoCapture cap;
+    Mat sharedFrame;
+    mutex cameraMutex;
+    thread cameraThread;
+    thread positionThread;
+    thread visualiserThread;
+    atomic<bool> visualiserRunning;
+    chrono::steady_clock::time_point startTime;
+    thread timerThread;
+    thread motionControlThread;
+    atomic<bool> motionRunning;
+    mutex frameMutex;
+    thread robotThread;
+    thread enemyThread;
+    atomic<bool> frameAvailable;
+    atomic<bool> aligningRobot{false};
 
+    atomic<bool> robotFrameReady{false};
+    atomic<bool> enemyFrameReady{false};
+
+    void controlRobotMovement();
+    void alignRobot(const Point2f& targetPosition);
     void setTargetPath(vector<Point2f> path);
     void setTargetPath();
     void setStatus(StrategyStatus newStatus);
@@ -100,12 +123,7 @@ private:
     ConstructionArea* getClosestConstructionArea(const Point2f& fromPoint);
     float getTargetPathDistance() const;
     float getDistance(Point2f start, Point2f end) const;
-    atomic<bool> running;
-    VideoCapture cap;
-    Mat sharedFrame;
-    mutex cameraMutex;
-    thread cameraThread;
-    thread positionThread;
-    thread visualiserThread;
-    atomic<bool> visualiserRunning;
+    void runCameraLoop();
+    void runRobotProcessingLoop();
+    void runEnemyProcessingLoop();
 };

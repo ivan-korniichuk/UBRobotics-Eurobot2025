@@ -31,6 +31,9 @@ private:
     Mat rodMain;
     Mat tvecMain;
 
+    Mat arenaHomography;
+    bool hasArenaHomography = false;
+
 public:
     Locator();
     void drawMarkers(Mat &frame, const vector<vector<Point2f>> &markerCorners, const vector<int> &markerIds);

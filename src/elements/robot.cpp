@@ -26,10 +26,27 @@ void Robot::drawElement(Mat& image) {
     putText(image, id, position - Point2f(90, 20), FONT_HERSHEY_SIMPLEX, 2, color, 5);
 }
 
-void Robot::setYaw(float yaw) {
-    if (yaw == -999) return;
-    std::lock_guard<std::mutex> lock(yawMutex);
-    this->yaw = fmod(yaw + 360.0 - cameraAngle, 360.0);
+void Robot::setYaw(float newYaw) {
+    if (newYaw == -999) return;
+
+    // Normalize yaw to [0, 360)
+    newYaw = fmod(newYaw + 360.0, 360.0);
+
+    lock_guard<mutex> lock(yawMutex);
+
+    float delta = fabs(newYaw - lastYaw);
+    // Correct wraparound (e.g., from 359 to 1)
+    if (delta > 180.0) delta = 360.0 - delta;
+
+    // If the jump is too large, consider it a glitch
+    if (delta > yawThreshold) {
+        // Ignore this update
+        // cerr << "[Yaw] Spike detected, ignoring: " << newYaw << " vs " << lastYaw << endl;
+        lastYaw = newYaw;
+        return;
+    }
+    lastYaw = newYaw;
+    this->yaw = fmod(newYaw - cameraAngle + 360.0, 360.0);
 }
 
 float Robot::getYaw() const {

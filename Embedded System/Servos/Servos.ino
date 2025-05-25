@@ -16,14 +16,14 @@ int position;
 int command;
 // Define servo parameters: {Pin, Min Pulse Width, Max Pulse Width, Open, Closed}
 const int SERVO[servoCount][5] = {
-    {15, 500, 2400, 55, 134},  // L_Twist_Servo
+    {15, 500, 2400, 40, 134},  // L_Twist_Servo // 55 134
     {2, 500, 2400, 150, 105},    // L_Servo
     {4, 500, 2400, 110, 75},    // L_L_Servo
     {16, 500, 2400, 105, 80},    // L_CL_Servo
     {17, 500, 2400, 60, 87},   // L_CR_Servo
     {5, 500, 2400, 45, 87},   // L_R_Servo
     {18, 500, 2400, 50, 87},   // R_Servo
-    {19, 500, 2400, 141, 65},  // R_Twist_Servo
+    {19, 500, 2400, 155, 65},  // R_Twist_Servo // 141, 65
     {21, 500, 2400, 120, 100},   // U_L_Servo
     {22, 500, 2400, 70, 90},   // U_R_Servo
     {23, 500, 2400, 50, 87},   // R_Servo
