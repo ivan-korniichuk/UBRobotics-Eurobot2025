@@ -1,3 +1,0 @@
-/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles/robot_controls.dir
-/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles/edit_cache.dir
-/Users/ivankorniichuk/Documents/UBR/Eurobot 2025/Eurobot2025/Robot_Controls/build/CMakeFiles/rebuild_cache.dir
