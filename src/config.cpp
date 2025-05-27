@@ -183,6 +183,11 @@ Robot robotB(7, {2650,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 void setUpEnvironment() {
   cout << "Innit start" << endl;
 
+  while (true) {
+    robotClient.sendSimasCommand(2, 0x09, {200, 1, 200, 1});
+    waitKey(100);
+  }
+
   locator.estimateCameraPose();
   navigator.insertElement(ramp);
 

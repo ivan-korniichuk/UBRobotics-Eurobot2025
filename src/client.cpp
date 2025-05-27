@@ -218,3 +218,19 @@ void RobotClient::waitForCordSignal(int listenPort) {
   cout << "[Client] Cord pull confirmed. Proceeding.\n";
   close(serverSock);
 }
+
+void RobotClient::sendSimasCommand(uint8_t targetID, uint8_t command, const vector<uint8_t>& payload) {
+  vector<uint8_t> packet;
+
+  packet.push_back(0x22);
+  packet.push_back(command);
+  packet.push_back(targetID);
+
+  for (uint8_t b : payload) {
+    packet.push_back(b);       // data[1] to data[7] (max 7 bytes)
+  }
+
+  while (packet.size() < 10) packet.push_back(0); // pad to 10 bytes
+
+  sendToServer(packet);
+}

@@ -15,9 +15,10 @@ esp_now_peer_info_t peerInfo;
 uint32_t t_lastPacket = 0,
          t_lastFunElement = 0;
 
-typedef struct TargetCommands{
+typedef struct TargetCommands {
   uint8_t cmd;
-  uint8_t data[8];
+  uint8_t targetID;
+  uint8_t data[6];
 } targetCommands;
 targetCommands dataIn, dataOut;
 
@@ -147,10 +148,10 @@ void loop() {
 
   if (millis() > t_lastFunElement){
     if (funElementUp){
-      funElement.speed(64, 1);
+      funElement.speed(100, 1);
     } else {
       if (funElementToggle){
-        funElement.speed(64, 0);
+        funElement.speed(100, 0);
       } else {
         funElement.stop();
       }
