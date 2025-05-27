@@ -378,7 +378,7 @@ void setUpBlue(int ourMaker, int theirMarker) {
   simaB3.setWaypoints({{600, 1700}, {700, 1400}, {800, 1100}});
   simaB4.setWaypoints({{650, 1650}, {750, 1350}, {850, 1050}});
 
-  navigator.insertElement(baseB);
+  navigator.insertElement(baseY);
 
   navigator.insertElement(areaYSideEl);
   // navigator.insertElement(areaBSideEl);
