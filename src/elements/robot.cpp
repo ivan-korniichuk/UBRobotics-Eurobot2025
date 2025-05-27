@@ -72,11 +72,6 @@ Point2f Robot::getPosition() const {
     return position;
 }
 
-void Robot::update() {
-    Point2f newPosition = locator->find(markerId);
-    setPosition(newPosition);
-}
-
 int Robot::getMarkerId() const {
     return markerId;
 }

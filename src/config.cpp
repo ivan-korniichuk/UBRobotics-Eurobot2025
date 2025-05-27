@@ -34,7 +34,11 @@ const int SERVER_PORT = 5005;
 
 const float ROBOT_RADIUS = 205; // avoidance
 const float ROBOT_SIZE = 205; // main body
-const float ENEMY_SIZE = 280; // main body
+
+const float SIMA_RADIUS = 100; // avoidance
+const float SIMA_SIZE = 100; // main body
+
+const float ENEMY_SIZE = 230; // main body
 
 int width = 3000, height = 2000; // arena size
 
@@ -153,13 +157,6 @@ ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(12
 vector<Point2f> constructionB4 = { Point2f(1050, 300), Point2f(1050, 450), Point2f(1400, 450), Point2f(1400, 300) };
 ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(1225, 675), 0, Point2f(1225, 525), ROBOT_RADIUS, "4");
 
-
-// vector<Point2f> constructionB3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
-// ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
-
-// vector<Point2f> constructionB4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
-// ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
-
 vector<Point2f> constructionB5 = { Point2f(2600, 50), Point2f(2600, 200), Point2f(2950, 200), Point2f(2950, 50) };
 ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 50), Point2f(2775, 425), 0, Point2f(2775, 275), ROBOT_RADIUS, "5");
 
@@ -176,17 +173,27 @@ Locator locator;
 
 RobotClient robotClient(SERVER_IP, SERVER_PORT); 
 
-Enemy enemy(2, {350,1750}, Scalar(0,0,255), ENEMY_SIZE, ROBOT_RADIUS);
+Enemy enemy(2, {1500,1750}, Scalar(0,0,255), ENEMY_SIZE, ROBOT_RADIUS);
 Robot robotY(7, {2650,1750}, Scalar(0,255,255), ROBOT_SIZE, ROBOT_RADIUS);
-Robot robotB(7, {2650,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
+Robot robotB(7, {350,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
+
+Sima simaY1(71, {2400, 1800}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY1");
+Sima simaY2(72, {2450, 1750}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY2");
+Sima simaY3(73, {2500, 1700}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY3");
+Sima simaY4(74, {2550, 1650}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY4");
+
+Sima simaB1(31, {500, 1800}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB1");
+Sima simaB2(32, {550, 1750}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB2");
+Sima simaB3(33, {600, 1700}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB3");
+Sima simaB4(34, {650, 1650}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB4");
 
 void setUpEnvironment() {
   cout << "Innit start" << endl;
 
-  while (true) {
-    robotClient.sendSimasCommand(2, 0x09, {200, 1, 200, 1});
-    waitKey(100);
-  }
+  // while (true) {
+  //   robotClient.sendSimasCommand(2, 0x09, {200, 1, 200, 1});
+  //   waitKey(100);
+  // }
 
   locator.estimateCameraPose();
   navigator.insertElement(ramp);
@@ -282,6 +289,21 @@ void setUpYellow(int ourMaker, int theirMarker) {
   clusters.push_back(&cluster9);
   clusters.push_back(&cluster10);
 
+  strategy.sima1 = &simaY1;
+  strategy.sima2 = &simaY2;
+  strategy.sima3 = &simaY3;
+  strategy.sima4 = &simaY4;
+
+  visualiser.sima1 = &simaY1;
+  visualiser.sima2 = &simaY2;
+  visualiser.sima3 = &simaY3;
+  visualiser.sima4 = &simaY4;
+
+  simaY1.setWaypoints({{2400, 1800}, {2300, 1500}, {2200, 1200}});
+  simaY2.setWaypoints({{2450, 1750}, {2350, 1450}, {2250, 1150}});
+  simaY3.setWaypoints({{2500, 1700}, {2400, 1400}, {2300, 1100}});
+  simaY4.setWaypoints({{2550, 1650}, {2450, 1350}, {2350, 1050}});
+
   navigator.insertElement(baseB);
 
   // navigator.insertElement(areaYSideEl);
@@ -340,6 +362,21 @@ void setUpBlue(int ourMaker, int theirMarker) {
   clusters.push_back(&cluster8);
   clusters.push_back(&cluster9);
   clusters.push_back(&cluster10);
+
+  strategy.sima1 = &simaB1;
+  strategy.sima2 = &simaB2;
+  strategy.sima3 = &simaB3;
+  strategy.sima4 = &simaB4;
+
+  visualiser.sima1 = &simaB1;
+  visualiser.sima2 = &simaB2;
+  visualiser.sima3 = &simaB3;
+  visualiser.sima4 = &simaB4;
+
+  simaB1.setWaypoints({{500, 1800}, {600, 1500}, {700, 1200}});
+  simaB2.setWaypoints({{550, 1750}, {650, 1450}, {750, 1150}});
+  simaB3.setWaypoints({{600, 1700}, {700, 1400}, {800, 1100}});
+  simaB4.setWaypoints({{650, 1650}, {750, 1350}, {850, 1050}});
 
   navigator.insertElement(baseB);
 

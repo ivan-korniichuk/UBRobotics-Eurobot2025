@@ -13,6 +13,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include "elements/sima.hpp"
 
 using namespace std;
 using namespace cv;
@@ -71,6 +72,11 @@ public:
 
     mutex visualiserMutex;
 
+    Sima* sima1;
+    Sima* sima2;
+    Sima* sima3;
+    Sima* sima4;
+
     Strategy();
 
     void start_test();
@@ -106,6 +112,13 @@ private:
 
     atomic<bool> robotFrameReady{false};
     atomic<bool> enemyFrameReady{false};
+
+    thread simaThread1;
+    thread simaThread2;
+    thread simaThread3;
+    thread simaThread4;
+
+    atomic<bool> simasActive{false};
 
     void controlRobotMovement();
     void alignRobot(const Point2f& targetPosition);

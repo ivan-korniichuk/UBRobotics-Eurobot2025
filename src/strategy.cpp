@@ -44,6 +44,90 @@ void Strategy::startAsyncPositionUpdates() {
     // Enemy processing thread
     enemyThread = thread(&Strategy::runEnemyProcessingLoop, this);
 
+    // simaThread1 = thread([this]() {
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(std::chrono::milliseconds(100));
+    //             continue;
+    //         }
+
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
+
+    //         Point2f pos = locator->find(sima1->getMarkerId(), frameCopy);
+    //         sima1->setPosition(pos);
+    //         sima1->step();
+
+    //         this_thread::sleep_for(std::chrono::milliseconds(20));
+    //     }
+    // });
+
+    // simaThread2 = thread([this]() {
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(std::chrono::milliseconds(100));
+    //             continue;
+    //         }
+
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
+
+    //         Point2f pos = locator->find(sima2->getMarkerId(), frameCopy);
+    //         sima2->setPosition(pos);
+    //         sima2->step();
+
+    //         this_thread::sleep_for(std::chrono::milliseconds(20));
+    //     }
+    // });
+
+    // simaThread3 = thread([this]() {
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(std::chrono::milliseconds(100));
+    //             continue;
+    //         }
+
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
+
+    //         Point2f pos = locator->find(sima3->getMarkerId(), frameCopy);
+    //         sima3->setPosition(pos);
+    //         sima3->step();
+
+    //         this_thread::sleep_for(std::chrono::milliseconds(20));
+    //     }
+    // });
+
+    // simaThread4 = thread([this]() {
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(std::chrono::milliseconds(100));
+    //             continue;
+    //         }
+
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
+
+    //         Point2f pos = locator->find(sima4->getMarkerId(), frameCopy);
+    //         sima4->setPosition(pos);
+    //         sima4->step();
+
+    //         this_thread::sleep_for(std::chrono::milliseconds(20));
+    //     }
+    // });
+
     // Visualiser thread
     visualiserThread = thread([this]() {
         while (visualiserRunning) {
@@ -58,7 +142,13 @@ void Strategy::startAsyncPositionUpdates() {
 
 void Strategy::runCameraLoop() {
     Mat frame;
+    cout << "[Camera] Thread started" << endl;
     while (running) {
+
+        if (!cap.isOpened()) {
+            cerr << "Error: Could not open the camera!" << endl;
+            exit(-1);
+        }
         auto start = chrono::high_resolution_clock::now();
         bool frameRead;
 
@@ -80,6 +170,7 @@ void Strategy::runCameraLoop() {
 }
 
 void Strategy::runRobotProcessingLoop() {
+    cout << "[Robot] Thread started" << endl;
     while (running) {
         auto start = chrono::high_resolution_clock::now();
         if (!robotFrameReady.load()) {
@@ -110,6 +201,7 @@ void Strategy::runRobotProcessingLoop() {
 }
 
 void Strategy::runEnemyProcessingLoop() {
+    cout << "[Enemy] Thread started" << endl;
     while (running) {
         auto start = chrono::high_resolution_clock::now();
 
@@ -153,6 +245,10 @@ void Strategy::stopAsyncPositionUpdates() {
     if (robotThread.joinable()) robotThread.join();
     if (enemyThread.joinable()) enemyThread.join();
     if (visualiserThread.joinable()) visualiserThread.join();
+    if (simaThread1.joinable()) simaThread1.join();
+    if (simaThread2.joinable()) simaThread2.join();
+    if (simaThread3.joinable()) simaThread3.join();
+    if (simaThread4.joinable()) simaThread4.join();
 
     cap.release();
 }
@@ -420,9 +516,10 @@ void Strategy::startTimer() {
 
             visualiser->setElapsedTime(seconds);
 
-            if (!simasOutDone && seconds >= 90) {
-                visualiser->addScore(55); // Simas out bonus
-                cout << "Simas out" << endl;
+            if (!simasOutDone && seconds >= 85) {
+                visualiser->addScore(55);
+                simasActive = true;
+                std::cout << "Simas are now active" << std::endl;
                 simasOutDone = true;
             }
 

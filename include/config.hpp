@@ -5,6 +5,7 @@
 #include "elements/construction_area.hpp"
 #include "elements/robot.hpp"
 #include "elements/enemy.hpp"
+#include "elements/sima.hpp"
 #include "navigator.hpp"
 #include "locator.hpp"
 #include "visualiser.hpp"
@@ -50,6 +51,10 @@ extern ConstructionArea constructionAreaY4, constructionAreaY5, constructionArea
 
 extern ConstructionArea constructionAreaB1, constructionAreaB2, constructionAreaB3;
 extern ConstructionArea constructionAreaB4, constructionAreaB5, constructionAreaB6;
+
+// Simas
+extern Sima simaY1, simaY2, simaY3, simaY4;
+extern Sima simaB1, simaB2, simaB3, simaB4;
 
 // Core system components
 extern Locator locator;
