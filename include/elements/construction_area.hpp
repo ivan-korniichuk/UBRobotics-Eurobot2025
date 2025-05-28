@@ -13,11 +13,12 @@ public:
     Point2f entry;
     int rotation;
     Point2f goal;
+    Point2f exit;
     bool built = false;
     Point2f center;
     double priority;
 
-    ConstructionArea(vector<Point2f> border, Scalar color, Point2f entry, int rotation, Point2f goal, float obstacleRadius = 0, string id = "-*", double priority = 0);
+    ConstructionArea(vector<Point2f> border, Scalar color, Point2f entry, Point2f exit, int rotation, Point2f goal, float obstacleRadius = 0, string id = "-*", double priority = 0);
 
     void drawElement(Mat& image) override;
     Point2f getAccessPoint();

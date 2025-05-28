@@ -59,8 +59,8 @@ public:
 
     Sima* sima1;
     Sima* sima2;
-    Sima* sima3;
     Sima* sima4;
+    Sima* simaDRUM;
 
     vector<Point2f> path = {};
 

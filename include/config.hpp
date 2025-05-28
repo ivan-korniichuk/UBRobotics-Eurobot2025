@@ -19,6 +19,7 @@ namespace robotVars {
 namespace locatorVars {
   extern const float stationaryMarkerSize;
   extern const float movingMarker;
+  extern const float simaMarker;
   extern const vector<Point3f> realMPoints;
 }
 
@@ -53,8 +54,8 @@ extern ConstructionArea constructionAreaB1, constructionAreaB2, constructionArea
 extern ConstructionArea constructionAreaB4, constructionAreaB5, constructionAreaB6;
 
 // Simas
-extern Sima simaY1, simaY2, simaY3, simaY4;
-extern Sima simaB1, simaB2, simaB3, simaB4;
+extern Sima simaY71, simaY72, simaY74, simaYDRUM;
+extern Sima simaB51, simaB52, simaB54, simaBDRUM;
 
 // Core system components
 extern Locator locator;

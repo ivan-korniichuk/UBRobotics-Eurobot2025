@@ -171,6 +171,48 @@ Point2f Locator::find(int movingMarkerId, const cv::Mat& frame) {
     return Point2f(-1, -1);
 }
 
+Point2f Locator::findSima(int simaId, const cv::Mat& frame) {
+    if (!cameraPoseFixed) {
+        std::cerr << "Error: Camera pose not yet fixed. Call estimateCameraPose() first." << std::endl;
+        return Point2f(-1, -1);
+    }
+
+    Mat grayFrame;
+    vector<vector<Point2f>> markerCorners;
+    vector<int> markerIds;
+    vector<vector<Point2f>> rejectedCandidates;
+
+    vector<Point3f> realMarkerPoints = {
+        {-simaMarker / 2, simaMarker / 2, 0},
+        { simaMarker / 2, simaMarker / 2, 0},
+        { simaMarker / 2, -simaMarker / 2, 0},
+        {-simaMarker / 2, -simaMarker / 2, 0}
+    };
+
+    cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+    detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
+
+    Mat rvecMarker, tvecMarker;
+    bool markerDetected = false;
+
+    for (size_t i = 0; i < markerIds.size(); ++i) {
+        if (markerIds[i] == simaId) {
+            markerDetected = solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker, false, SOLVEPNP_IPPE_SQUARE);
+            break;
+        }
+    }
+
+    if (markerDetected) {
+        Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
+        return Point2f(
+            static_cast<float>(markerWorldPos.at<double>(0, 0)),
+            static_cast<float>(markerWorldPos.at<double>(1, 0))
+        );
+    }
+
+    return Point2f(-1, -1);
+}
+
 Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
     if (!cameraPoseFixed || !hasArenaHomography)
         return Pose2D{Point2f(-1, -1), -999.0f};
@@ -197,6 +239,61 @@ Pose2D Locator::findWithYaw(int movingMarkerId, const cv::Mat& frame) {
 
     for (size_t i = 0; i < markerIds.size(); ++i) {
         if (markerIds[i] == movingMarkerId) {
+            markerDetected = solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker, false, SOLVEPNP_IPPE_SQUARE);
+            markerPts = markerCorners[i];
+            break;
+        }
+    }
+
+    if (!markerDetected || markerPts.size() != 4) return Pose2D{Point2f(-1, -1), -999.0f};
+
+    // Arena X/Y position from PnP
+    Mat markerWorldPos = rodMain.t() * (tvecMarker - tvecMain);
+    Point2f arenaPos(
+        static_cast<float>(markerWorldPos.at<double>(0, 0)),
+        static_cast<float>(markerWorldPos.at<double>(1, 0))
+    );
+
+    // ===== Homography for yaw =====
+    // Find yaw direction vector in arena using homography
+    // (Uses image points, so is robust to marker tilting/rotation relative to camera)
+    Point2f markerCenter = (markerPts[0] + markerPts[1] + markerPts[2] + markerPts[3]) / 4;
+    vector<Point2f> camPts = {markerCenter, (markerPts[0] + markerPts[1]) / 2}; // top edge direction
+    vector<Point2f> worldPts;
+    perspectiveTransform(camPts, worldPts, arenaHomography);
+
+    Point2f dir = worldPts[1] - worldPts[0];
+    float yaw = atan2(dir.y, dir.x) * 180.0f / CV_PI;
+
+    return Pose2D{arenaPos, yaw};
+}
+
+Pose2D Locator::findWithYawSima(int simaId, const cv::Mat& frame) {
+    if (!cameraPoseFixed || !hasArenaHomography)
+        return Pose2D{Point2f(-1, -1), -999.0f};
+
+    Mat grayFrame;
+    vector<vector<Point2f>> markerCorners;
+    vector<int> markerIds;
+    vector<vector<Point2f>> rejectedCandidates;
+
+    cvtColor(frame, grayFrame, COLOR_BGR2GRAY);
+    detector.detectMarkers(grayFrame, markerCorners, markerIds, rejectedCandidates);
+
+    // ===== PnP for position =====
+    vector<Point3f> realMarkerPoints = {
+        {-simaMarker / 2, simaMarker / 2, 0},
+        { simaMarker / 2, simaMarker / 2, 0},
+        { simaMarker / 2, -simaMarker / 2, 0},
+        {-simaMarker / 2, -simaMarker / 2, 0}
+    };
+
+    Mat rvecMarker, tvecMarker;
+    bool markerDetected = false;
+    vector<Point2f> markerPts;
+
+    for (size_t i = 0; i < markerIds.size(); ++i) {
+        if (markerIds[i] == simaId) {
             markerDetected = solvePnP(realMarkerPoints, markerCorners[i], cameraMatrix, distCoeffs, rvecMarker, tvecMarker, false, SOLVEPNP_IPPE_SQUARE);
             markerPts = markerCorners[i];
             break;

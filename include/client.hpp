@@ -35,6 +35,8 @@ public:
     void waitForCordSignal(int listenPort = 5050);
     void registerWithRPi();
     void sendSimasCommand(uint8_t targetID, uint8_t command, const vector<uint8_t>& payload);
+    void sendGrab(bool grab);
+    void sendSeek();
     
 private:
     string serverIp;

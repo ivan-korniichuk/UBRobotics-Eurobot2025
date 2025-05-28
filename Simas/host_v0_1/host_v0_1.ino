@@ -4,7 +4,7 @@
 #include "vlookup.h"
 
 #define _channel 0
-#define I2C_ADDRESS 0x22
+#define I2C_ADDRESS 0x12
 
 byte localMAC[6];
 esp_now_peer_info_t peerInfo;
@@ -86,7 +86,7 @@ void forwardCommandViaESPNOW() {
 
 void setup() {
   Serial.begin(115200);
-  Wire.begin(I2C_ADDRESS);
+  Wire.begin(I2C_ADDRESS, 1, 2, 400000);
   Wire.onReceive(receiveI2C);
 
   Wifi_begin();

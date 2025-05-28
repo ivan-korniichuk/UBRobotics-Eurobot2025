@@ -7,6 +7,7 @@ namespace robotVars {
 namespace locatorVars {
   const float stationaryMarkerSize = 100.0f;
   const float movingMarker = 70.0f;
+  const float simaMarker = 80.0f;
   // const float stationaryMarkerSize = 84.0f;
   // const float movingMarker = 70.0f;
   const vector<Point3f> realMPoints = {
@@ -32,11 +33,11 @@ namespace locatorVars {
 const string SERVER_IP = "192.168.4.1"; // replace with aclual IP
 const int SERVER_PORT = 5005;
 
-const float ROBOT_RADIUS = 205; // avoidance
-const float ROBOT_SIZE = 205; // main body
+const float ROBOT_RADIUS = 210; // avoidance
+const float ROBOT_SIZE = 210; // main body
 
-const float SIMA_RADIUS = 100; // avoidance
-const float SIMA_SIZE = 100; // main body
+const float SIMA_RADIUS = 75; // avoidance
+const float SIMA_SIZE = 75; // main body
 
 const float ENEMY_SIZE = 230; // main body
 
@@ -121,22 +122,22 @@ Element constBEdgeEl(constBEdgeVec, Scalar(255, 0, 0), ROBOT_RADIUS);
 
 // Yellow
 vector<Point2f> constructionY1 = { Point2f(1600, 50), Point2f(1600, 200), Point2f(1950, 200), Point2f(1950, 50) };
-ConstructionArea constructionAreaY1(constructionY1, Scalar(0, 0, 50), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
+ConstructionArea constructionAreaY1(constructionY1, Scalar(0, 0, 50),Point2f(1775, 450), Point2f(1775, 425), 0, Point2f(1775, 275), ROBOT_RADIUS, "1");
 
 vector<Point2f> constructionY2 = { Point2f(1600, 300), Point2f(1600, 450), Point2f(1950, 450), Point2f(1950, 300) };
-ConstructionArea constructionAreaY2(constructionY2, Scalar(0, 0, 50), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
+ConstructionArea constructionAreaY2(constructionY2, Scalar(0, 0, 50), Point2f(1775, 700), Point2f(1775, 675), 0, Point2f(1775, 525), ROBOT_RADIUS, "2");
 
 vector<Point2f> constructionY3 = { Point2f(50, 700), Point2f(50, 1050), Point2f(200, 1050), Point2f(200, 700) };
-ConstructionArea constructionAreaY3(constructionY3, Scalar(0, 0, 50), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
+ConstructionArea constructionAreaY3(constructionY3, Scalar(0, 0, 50), Point2f(450, 875), Point2f(425, 875), 0, Point2f(275, 875), ROBOT_RADIUS, "3");
 
 vector<Point2f> constructionY4 = { Point2f(300, 700), Point2f(300, 1050), Point2f(450, 1050), Point2f(450, 700) };
-ConstructionArea constructionAreaY4(constructionY4, Scalar(0, 0, 50), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
+ConstructionArea constructionAreaY4(constructionY4, Scalar(0, 0, 50), Point2f(700, 875), Point2f(675, 875), 0, Point2f(525, 875), ROBOT_RADIUS, "4");
 
 vector<Point2f> constructionY5 = { Point2f(2050, 50), Point2f(2050, 200), Point2f(2400, 200), Point2f(2400, 50) };
-ConstructionArea constructionAreaY5(constructionY5, Scalar(0, 0, 50), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
+ConstructionArea constructionAreaY5(constructionY5, Scalar(0, 0, 50), Point2f(2225, 550), Point2f(2225, 425), 0, Point2f(2225, 275), ROBOT_RADIUS, "5");
 
 vector<Point2f> constructionY6 = { Point2f(50, 50), Point2f(50, 200), Point2f(400, 200), Point2f(400, 50) };
-ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 50), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
+ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 50), Point2f(225, 450), Point2f(225, 425), 0, Point2f(225, 275), ROBOT_RADIUS, "6");
 
 
 // vector<Point2f> areaBSideVec = { Point2f(2550, 650), Point2f(2550, 1100), Point2f(3000, 1100), Point2f(3000, 650) };
@@ -145,23 +146,23 @@ ConstructionArea constructionAreaY6(constructionY6, Scalar(0, 0, 50), Point2f(22
 // vector<Point2f> constBEdgeVec = { Point2f(2550, 0), Point2f(2550, 150), Point2f(3000, 150), Point2f(3000, 0) };
 
 // Blue
-vector<Point2f> constructionB1 = { Point2f(2800, 700), Point2f(2800, 1050), Point2f(2950, 1050), Point2f(2950, 700) };
-ConstructionArea constructionAreaB1(constructionB1, Scalar(0, 0, 50), Point2f(2575, 875), 0, Point2f(2725, 875), ROBOT_RADIUS, "1");
+vector<Point2f> constructionB1 = { Point2f(2850, 700), Point2f(2850, 1050), Point2f(3000, 1050), Point2f(3000, 700) };
+ConstructionArea constructionAreaB1(constructionB1, Scalar(0, 0, 50), Point2f(2550, 875), Point2f(2525, 875), 0, Point2f(2725, 875), ROBOT_RADIUS, "1");
 
-vector<Point2f> constructionB2 = { Point2f(2550, 700), Point2f(2550, 1050), Point2f(2700, 1050), Point2f(2700, 700) };
-ConstructionArea constructionAreaB2(constructionB2, Scalar(0, 0, 50), Point2f(2325, 875), 0, Point2f(2175, 875), ROBOT_RADIUS, "2");
+vector<Point2f> constructionB2 = { Point2f(2600, 700), Point2f(2600, 1050), Point2f(2750, 1050), Point2f(2750, 700) };
+ConstructionArea constructionAreaB2(constructionB2, Scalar(0, 0, 50), Point2f(2350, 875), Point2f(2325, 875), 0, Point2f(2175, 875), ROBOT_RADIUS, "2");
 
-vector<Point2f> constructionB3 = { Point2f(1050, 50), Point2f(1050, 200), Point2f(1400, 200), Point2f(1400, 50) };
-ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(1225, 425), 0, Point2f(1225, 275), ROBOT_RADIUS, "3");
+vector<Point2f> constructionB3 = { Point2f(1050, 0), Point2f(1050, 150), Point2f(1400, 150), Point2f(1400, 0) };
+ConstructionArea constructionAreaB3(constructionB3, Scalar(0, 0, 50), Point2f(1225, 425), Point2f(1225, 450), 0, Point2f(1225, 275), ROBOT_RADIUS, "3");
 
-vector<Point2f> constructionB4 = { Point2f(1050, 300), Point2f(1050, 450), Point2f(1400, 450), Point2f(1400, 300) };
-ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(1225, 675), 0, Point2f(1225, 525), ROBOT_RADIUS, "4");
+vector<Point2f> constructionB4 = { Point2f(1050, 250), Point2f(1050, 400), Point2f(1400, 400), Point2f(1400, 250) };
+ConstructionArea constructionAreaB4(constructionB4, Scalar(0, 0, 50), Point2f(1225, 675), Point2f(1225, 700), 0, Point2f(1225, 525), ROBOT_RADIUS, "4");
 
-vector<Point2f> constructionB5 = { Point2f(2600, 50), Point2f(2600, 200), Point2f(2950, 200), Point2f(2950, 50) };
-ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 50), Point2f(2775, 425), 0, Point2f(2775, 275), ROBOT_RADIUS, "5");
+vector<Point2f> constructionB5 = { Point2f(2600, 0), Point2f(2600, 150), Point2f(2950, 150), Point2f(2950, 0) };
+ConstructionArea constructionAreaB5(constructionB5, Scalar(0, 0, 50), Point2f(2775, 425), Point2f(2775, 450), 0, Point2f(2775, 275), ROBOT_RADIUS, "5");
 
-vector<Point2f> constructionB6 = { Point2f(600, 50), Point2f(600, 200), Point2f(950, 200), Point2f(950, 50) };
-ConstructionArea constructionAreaB6(constructionB6, Scalar(0, 0, 50), Point2f(775, 425), 0, Point2f(775, 275), ROBOT_RADIUS, "6");
+vector<Point2f> constructionB6 = { Point2f(600, 0), Point2f(600, 150), Point2f(950, 150), Point2f(950, 0) };
+ConstructionArea constructionAreaB6(constructionB6, Scalar(0, 0, 50), Point2f(775, 425), Point2f(775, 450), 0, Point2f(775, 275), ROBOT_RADIUS, "6");
 
 Visualiser visualiser(height, width);
 
@@ -177,23 +178,18 @@ Enemy enemy(2, {1500,1750}, Scalar(0,0,255), ENEMY_SIZE, ROBOT_RADIUS);
 Robot robotY(7, {2650,1750}, Scalar(0,255,255), ROBOT_SIZE, ROBOT_RADIUS);
 Robot robotB(7, {350,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 
-Sima simaY1(71, {2400, 1800}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY1");
-Sima simaY2(72, {2450, 1750}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY2");
-Sima simaY3(73, {2500, 1700}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY3");
-Sima simaY4(74, {2550, 1650}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "SY4");
+Sima simaY71(71, {2900, 1925}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "71");
+Sima simaY72(72, {2900, 1825}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "72");
+Sima simaY74(74, {2900, 1725}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "74");
+Sima simaYDRUM(0, {2900, 1625}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "D");
 
-Sima simaB1(31, {500, 1800}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB1");
-Sima simaB2(32, {550, 1750}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB2");
-Sima simaB3(33, {600, 1700}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB3");
-Sima simaB4(34, {650, 1650}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "SB4");
+Sima simaB51(51, {100, 1625}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "51");
+Sima simaB52(52, {100, 1725}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "52");
+Sima simaB54(54, {100, 1825}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "54");
+Sima simaBDRUM(0, {100, 1925}, Scalar(255, 0, 0), SIMA_SIZE, SIMA_RADIUS, "D");
 
 void setUpEnvironment() {
   cout << "Innit start" << endl;
-
-  // while (true) {
-  //   robotClient.sendSimasCommand(2, 0x09, {200, 1, 200, 1});
-  //   waitKey(100);
-  // }
 
   locator.estimateCameraPose();
   navigator.insertElement(ramp);
@@ -289,20 +285,24 @@ void setUpYellow(int ourMaker, int theirMarker) {
   clusters.push_back(&cluster9);
   clusters.push_back(&cluster10);
 
-  strategy.sima1 = &simaY1;
-  strategy.sima2 = &simaY2;
-  strategy.sima3 = &simaY3;
-  strategy.sima4 = &simaY4;
+  strategy.sima1 = &simaY71;
+  strategy.sima2 = &simaY72;
+  strategy.sima4 = &simaY74;
+  strategy.simaDRUM = &simaYDRUM;
 
-  visualiser.sima1 = &simaY1;
-  visualiser.sima2 = &simaY2;
-  visualiser.sima3 = &simaY3;
-  visualiser.sima4 = &simaY4;
+  visualiser.sima1 = &simaY71;
+  visualiser.sima2 = &simaY72;
+  visualiser.sima4 = &simaY74;
+  visualiser.simaDRUM = &simaYDRUM;
 
-  simaY1.setWaypoints({{2400, 1800}, {2300, 1500}, {2200, 1200}});
-  simaY2.setWaypoints({{2450, 1750}, {2350, 1450}, {2250, 1150}});
-  simaY3.setWaypoints({{2500, 1700}, {2400, 1400}, {2300, 1100}});
-  simaY4.setWaypoints({{2550, 1650}, {2450, 1350}, {2350, 1050}});
+  simaY71.robotClient = &robotClient;
+  simaY72.robotClient = &robotClient;
+  simaY74.robotClient = &robotClient;
+  simaYDRUM.robotClient = &robotClient;
+
+  simaY71.setWaypoints({{2750, 1625}, {1350, 1550}, {1100, 1450}});
+  simaY72.setWaypoints({{2750, 1625}, {1350, 1550}, {1500, 1450}});
+  simaY74.setWaypoints({{2750, 1625}, {1350, 1550}, {1900, 1450}});
 
   navigator.insertElement(baseB);
 
@@ -363,20 +363,24 @@ void setUpBlue(int ourMaker, int theirMarker) {
   clusters.push_back(&cluster9);
   clusters.push_back(&cluster10);
 
-  strategy.sima1 = &simaB1;
-  strategy.sima2 = &simaB2;
-  strategy.sima3 = &simaB3;
-  strategy.sima4 = &simaB4;
+  strategy.sima1 = &simaB51;
+  strategy.sima2 = &simaB52;
+  strategy.sima4 = &simaB54;
+  strategy.simaDRUM = &simaBDRUM;
 
-  visualiser.sima1 = &simaB1;
-  visualiser.sima2 = &simaB2;
-  visualiser.sima3 = &simaB3;
-  visualiser.sima4 = &simaB4;
+  visualiser.sima1 = &simaB51;
+  visualiser.sima2 = &simaB52;
+  visualiser.sima4 = &simaB54;
+  visualiser.simaDRUM = &simaBDRUM;
 
-  simaB1.setWaypoints({{500, 1800}, {600, 1500}, {700, 1200}});
-  simaB2.setWaypoints({{550, 1750}, {650, 1450}, {750, 1150}});
-  simaB3.setWaypoints({{600, 1700}, {700, 1400}, {800, 1100}});
-  simaB4.setWaypoints({{650, 1650}, {750, 1350}, {850, 1050}});
+  simaB51.robotClient = &robotClient;
+  simaB52.robotClient = &robotClient;
+  simaB54.robotClient = &robotClient;
+  simaBDRUM.robotClient = &robotClient;
+
+  simaB51.setWaypoints({{250, 1625}, {650, 1550}, {1900, 1450}});
+  simaB52.setWaypoints({{250, 1625}, {650, 1550}, {1500, 1450}});
+  simaB54.setWaypoints({{250, 1625}, {650, 1550}, {1100, 1450}});
 
   navigator.insertElement(baseY);
 

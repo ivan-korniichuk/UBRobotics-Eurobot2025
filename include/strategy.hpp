@@ -4,6 +4,7 @@
 #include "elements/construction_area.hpp"
 #include "elements/robot.hpp"
 #include "elements/enemy.hpp"
+#include "elements/sima.hpp"
 #include "visualiser.hpp"
 #include "navigator.hpp"
 #include "client.hpp"
@@ -13,7 +14,6 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
-#include "elements/sima.hpp"
 
 using namespace std;
 using namespace cv;
@@ -59,23 +59,23 @@ public:
     Enemy* enemy;
     Robot* robot;
 
+    Sima* sima1;
+    Sima* sima2;
+    Sima* sima4;
+    Sima* simaDRUM;
+
     Visualiser* visualiser;
     Navigator* navigator;
     Locator* locator;
 
     bool flagDeployed = false;
-    float maxAccDistance = 50;
+    float maxAccDistance = 30;
     vector<Point2f> targetPath = {};
 
     StrategyStatus currentStatus = StrategyStatus::IDLE;
     StrategyStatus previousStatus = StrategyStatus::IDLE;
 
     mutex visualiserMutex;
-
-    Sima* sima1;
-    Sima* sima2;
-    Sima* sima3;
-    Sima* sima4;
 
     Strategy();
 
@@ -105,6 +105,7 @@ private:
     thread motionControlThread;
     atomic<bool> motionRunning;
     mutex frameMutex;
+    
     thread robotThread;
     thread enemyThread;
     atomic<bool> frameAvailable;
@@ -115,7 +116,6 @@ private:
 
     thread simaThread1;
     thread simaThread2;
-    thread simaThread3;
     thread simaThread4;
 
     atomic<bool> simasActive{false};

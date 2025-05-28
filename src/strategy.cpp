@@ -5,10 +5,9 @@ Strategy::Strategy() {}
 
 // if 0 clusters or 0 conts areas return error don't halt
 void Strategy::start_test() {
-    // robotClient->sendMoveCommand(100, -50);
     startAsyncPositionUpdates();
-    // robotClient->registerWithRPi();
-    // robotClient->waitForCordSignal();  
+    robotClient->registerWithRPi();
+    robotClient->waitForCordSignal();  
     startTimer();
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
@@ -44,89 +43,83 @@ void Strategy::startAsyncPositionUpdates() {
     // Enemy processing thread
     enemyThread = thread(&Strategy::runEnemyProcessingLoop, this);
 
-    // simaThread1 = thread([this]() {
-    //     while (running) {
-    //         if (!simasActive.load()) {
-    //             this_thread::sleep_for(std::chrono::milliseconds(100));
-    //             continue;
-    //         }
+    simaThread1 = thread([this]() {
+        while (running) {
+            if (!simasActive.load()) {
+                this_thread::sleep_for(chrono::milliseconds(100));
+                continue;
+            }
 
-    //         Mat frameCopy;
-    //         {
-    //             lock_guard<mutex> lock(frameMutex);
-    //             frameCopy = sharedFrame.clone();
-    //         }
+            Mat frameCopy;
+            {
+                lock_guard<mutex> lock(frameMutex);
+                frameCopy = sharedFrame.clone();
+            }
 
-    //         Point2f pos = locator->find(sima1->getMarkerId(), frameCopy);
-    //         sima1->setPosition(pos);
-    //         sima1->step();
+            Pose2D pose = locator->findWithYawSima(sima1->getMarkerId(), frameCopy);
+            sima1->setPosition(pose.position);
+            sima1->setYaw(pose.yaw);
+            sima1->step(0);
 
-    //         this_thread::sleep_for(std::chrono::milliseconds(20));
-    //     }
-    // });
+            this_thread::sleep_for(chrono::milliseconds(1));
+        }
+    });
 
-    // simaThread2 = thread([this]() {
-    //     while (running) {
-    //         if (!simasActive.load()) {
-    //             this_thread::sleep_for(std::chrono::milliseconds(100));
-    //             continue;
-    //         }
+    simaThread2 = thread([this]() {
+        bool localActive = false;
+        while (running) {
+            if (!simasActive.load()) {
+                this_thread::sleep_for(chrono::milliseconds(100));
+                continue;
+            }
 
-    //         Mat frameCopy;
-    //         {
-    //             lock_guard<mutex> lock(frameMutex);
-    //             frameCopy = sharedFrame.clone();
-    //         }
+            if (!localActive) {
+                this_thread::sleep_for(chrono::milliseconds(1500));
+                localActive = true;
+            }
 
-    //         Point2f pos = locator->find(sima2->getMarkerId(), frameCopy);
-    //         sima2->setPosition(pos);
-    //         sima2->step();
+            Mat frameCopy;
+            {
+                lock_guard<mutex> lock(frameMutex);
+                frameCopy = sharedFrame.clone();
+            }
 
-    //         this_thread::sleep_for(std::chrono::milliseconds(20));
-    //     }
-    // });
+            Pose2D pose = locator->findWithYawSima(sima2->getMarkerId(), frameCopy);
+            sima2->setPosition(pose.position);
+            sima2->setYaw(pose.yaw);
+            sima2->step(1);
 
-    // simaThread3 = thread([this]() {
-    //     while (running) {
-    //         if (!simasActive.load()) {
-    //             this_thread::sleep_for(std::chrono::milliseconds(100));
-    //             continue;
-    //         }
+            this_thread::sleep_for(chrono::milliseconds(1));
+        }
+    });
 
-    //         Mat frameCopy;
-    //         {
-    //             lock_guard<mutex> lock(frameMutex);
-    //             frameCopy = sharedFrame.clone();
-    //         }
+    simaThread4 = thread([this]() {
+        bool localActive = false;
+        while (running) {
+            if (!simasActive.load()) {
+                this_thread::sleep_for(chrono::milliseconds(100));
+                continue;
+            }
 
-    //         Point2f pos = locator->find(sima3->getMarkerId(), frameCopy);
-    //         sima3->setPosition(pos);
-    //         sima3->step();
+            if (!localActive) {
+                this_thread::sleep_for(chrono::milliseconds(3000));
+                localActive = true;
+            }
 
-    //         this_thread::sleep_for(std::chrono::milliseconds(20));
-    //     }
-    // });
+            Mat frameCopy;
+            {
+                lock_guard<mutex> lock(frameMutex);
+                frameCopy = sharedFrame.clone();
+            }
 
-    // simaThread4 = thread([this]() {
-    //     while (running) {
-    //         if (!simasActive.load()) {
-    //             this_thread::sleep_for(std::chrono::milliseconds(100));
-    //             continue;
-    //         }
+            Pose2D pose = locator->findWithYawSima(sima4->getMarkerId(), frameCopy);
+            sima4->setPosition(pose.position);
+            sima4->setYaw(pose.yaw);
+            sima4->step(3);
 
-    //         Mat frameCopy;
-    //         {
-    //             lock_guard<mutex> lock(frameMutex);
-    //             frameCopy = sharedFrame.clone();
-    //         }
-
-    //         Point2f pos = locator->find(sima4->getMarkerId(), frameCopy);
-    //         sima4->setPosition(pos);
-    //         sima4->step();
-
-    //         this_thread::sleep_for(std::chrono::milliseconds(20));
-    //     }
-    // });
+            this_thread::sleep_for(chrono::milliseconds(1));
+        }
+    });
 
     // Visualiser thread
     visualiserThread = thread([this]() {
@@ -247,7 +240,6 @@ void Strategy::stopAsyncPositionUpdates() {
     if (visualiserThread.joinable()) visualiserThread.join();
     if (simaThread1.joinable()) simaThread1.join();
     if (simaThread2.joinable()) simaThread2.join();
-    if (simaThread3.joinable()) simaThread3.join();
     if (simaThread4.joinable()) simaThread4.join();
 
     cap.release();
@@ -304,10 +296,23 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
                 }
             }
             alignRobot(targetCluster->center);
-            setStatus(completeStatus);
-            return;
+            // robotClient->sendSeek();
+            // this_thread::sleep_for(chrono::milliseconds(5000));
+            // robotClient->sendGrab(true);
+            break;
         }
     }
+    aligningRobot.store(true);
+    setTargetPath({});
+    robotClient->sendNewESPMoveCommand(0,0,0);
+    this_thread::sleep_for(chrono::milliseconds(500));
+    robotClient->sendSeek();
+    this_thread::sleep_for(chrono::milliseconds(8000));
+    robotClient->sendGrab(true);
+    this_thread::sleep_for(chrono::milliseconds(500));
+    aligningRobot.store(false);
+
+    setStatus(completeStatus);
 }
 
 void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
@@ -323,7 +328,7 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
         // }
 
         if (targetConstructionArea) {
-            vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->getAccessPoint());
+            vector<Point2f> path = navigator->navigate(robot->getPosition(), targetConstructionArea->entry);
             setTargetPath(path);
         } else {
             setTargetPath();
@@ -341,12 +346,45 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
                 }
             }
             alignRobot(targetConstructionArea->center);
-            setStatus(completeStatus);
-
-            visualiser->score += 12; // Increment score for successful construction
-            return;
+            break;
         }
     }
+
+    while (true) {
+        vector<Point2f> entryPath = {robot->getPosition(), targetConstructionArea->goal};
+        setTargetPath(entryPath);
+
+        float dist = navigator->distanceFromPath(entryPath);
+
+        if (dist > 0 && dist < 20.0f) {
+            aligningRobot.store(true);
+            setTargetPath({});
+            this_thread::sleep_for(chrono::milliseconds(100));
+            robotClient->sendNewESPMoveCommand(0,0,0);
+            this_thread::sleep_for(chrono::milliseconds(1000));
+            robotClient->sendGrab(false);
+            break;
+        }
+    }
+
+    this_thread::sleep_for(chrono::milliseconds(1000));
+    aligningRobot.store(false);
+
+    while (true) {
+        vector<Point2f> exitPath = {robot->getPosition(), targetConstructionArea->exit};
+        setTargetPath(exitPath);
+
+        float dist = navigator->distanceFromPath(exitPath);
+
+        if (dist > 0 && dist < 20.0f) {
+            break;
+        }
+    }
+
+    setStatus(completeStatus);
+
+    visualiser->score += 12; // Increment score for successful construction
+    return;
 }
 
 float Strategy::getTargetPathDistance() const {
@@ -358,14 +396,14 @@ float Strategy::getTargetPathDistance() const {
     float dx = end.x - start.x;
     float dy = end.y - start.y;
 
-    return std::sqrt(dx * dx + dy * dy);
+    return sqrt(dx * dx + dy * dy);
 }
 
 float Strategy::getDistance(Point2f start, Point2f end) const {
     float dx = end.x - start.x;
     float dy = end.y - start.y;
 
-    return std::sqrt(dx * dx + dy * dy);
+    return sqrt(dx * dx + dy * dy);
 }
 
 vector<Cluster*> Strategy::getAvailableClusters() {
@@ -440,7 +478,7 @@ vector<Point2f> Strategy::getPathToCluster(Cluster* cluster) {
 
 Cluster* Strategy::getClosestCluster(const Point2f& fromPoint) {
     Cluster* closest = nullptr;
-    float minDist = std::numeric_limits<float>::max();
+    float minDist = numeric_limits<float>::max();
 
     for (Cluster* cluster : getAvailableClusters()) {
         if (cluster->status != Cluster::ClusterStatus::AVAILABLE) continue;
@@ -459,7 +497,7 @@ Cluster* Strategy::getClosestCluster(const Point2f& fromPoint) {
 
 ConstructionArea* Strategy::getClosestConstructionArea(const Point2f& fromPoint) {
     ConstructionArea* closest = nullptr;
-    float minDist = std::numeric_limits<float>::max();
+    float minDist = numeric_limits<float>::max();
 
     for (ConstructionArea* area : getAvailableConstructionAreas()) {
         if (area->built) continue;
@@ -504,7 +542,7 @@ void Strategy::startTimer() {
         while (motionRunning) {
             // cout << "Robot position: " << robot->getPosition() << endl;
             controlRobotMovement();
-            this_thread::sleep_for(chrono::milliseconds(50));
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
     });
 
@@ -517,17 +555,32 @@ void Strategy::startTimer() {
             visualiser->setElapsedTime(seconds);
 
             if (!simasOutDone && seconds >= 85) {
+                simaDRUM->robotClient->sendSimasCommand(4, 0x00, {static_cast<uint8_t>(simaDRUM->getMarkerId() > 60 ? 1 : 0)});
                 visualiser->addScore(55);
                 simasActive = true;
-                std::cout << "Simas are now active" << std::endl;
+                cout << "Simas are now active" << endl;
                 simasOutDone = true;
             }
 
             if (seconds >= 99) {
+                // simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
                 cout << "Timer reached. Halting strategy." << endl;
                 motionRunning = false;
 
+                robotClient->sendNewESPMoveCommand(0, 0, 0);
+                sima1->robotClient->sendSimasCommand(0, 0x0A, {1});
+                sima2->robotClient->sendSimasCommand(1, 0x0A, {1});
+                sima4->robotClient->sendSimasCommand(3, 0x0A, {1});
+                simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
+                sima1->robotClient->sendSimasCommand(0, 0x09, {0, 1, 0, 1});
+                sima2->robotClient->sendSimasCommand(1, 0x09, {0, 1, 0, 1});
+                sima4->robotClient->sendSimasCommand(3, 0x09, {0, 1, 0, 1});
+                simaDRUM->robotClient->sendSimasCommand(4, 0x09, {0, 1, 0, 1});
+
                 if (motionControlThread.joinable()) motionControlThread.join();
+                if (simaThread1.joinable()) simaThread1.join();
+                if (simaThread2.joinable()) simaThread2.join();
+                if (simaThread4.joinable()) simaThread4.join();
 
                 break;
             }
@@ -554,7 +607,7 @@ void Strategy::controlRobotMovement() {
     float dy = -(next.y - current.y);
     float pathAngle = atan2(dy, dx) * 180.0 / CV_PI;  // in degrees
 
-    float robotYaw = robot->getYaw();  // in degrees
+    float robotYaw = robot->getYaw() - 90;  // in degrees
     float robotYawRad = robotYaw * CV_PI / 180.0f;
     // float deltaYaw = pathAngle - robotYaw;
 
@@ -577,8 +630,7 @@ void Strategy::controlRobotMovement() {
     + 9.05225505;
 
     // float rawSpeed = 100.0f * log(0.03f * distance + 1.0f);
-    float speed = max(12.0f, min(300.0f, rawSpeed));
-
+    float speed = max(10.0f, min(500.0f, rawSpeed));
     float norm_dx = dx / distance;
     float norm_dy = -dy / distance;
 
@@ -594,9 +646,9 @@ void Strategy::controlRobotMovement() {
     while (deltaYaw < -180) deltaYaw += 360;
 
     cout << fixed << setprecision(2);
-    // cout << "ΔYaw: " << deltaYaw << "°, localX: " << scaled_dx << ", localY: " << scaled_dy << ", robotYaw: " << robotYaw << "°\n";
+    cout << "ΔYaw: " << deltaYaw << "°, localX: " << scaled_dx << ", localY: " << scaled_dy << ", robotYaw: " << robotYaw << "°\n";
 
-    robotClient->sendNewESPMoveCommand(scaled_dx/1.2, -scaled_dy/1.2, 0);
+    robotClient->sendNewESPMoveCommand(-scaled_dx*2.7, -scaled_dy*2.7, 0);
 }
 
 void Strategy::alignRobot(const Point2f& targetPos) {
@@ -645,11 +697,11 @@ void Strategy::alignRobot(const Point2f& targetPos) {
                 break;
             }
         } else {
-            robotClient->sendNewESPMoveCommand(0, 0, relativeYaw);
+            robotClient->sendNewESPMoveCommand(0, 0, relativeYaw*5);
         }
     }
     cout << "stop rotating" << endl;
     robotClient->sendNewESPMoveCommand(0, 0, 0);
-    this_thread::sleep_for(chrono::milliseconds(2000));
+    this_thread::sleep_for(chrono::milliseconds(1000));
     aligningRobot.store(false);
 }

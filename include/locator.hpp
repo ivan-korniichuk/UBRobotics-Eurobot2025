@@ -39,7 +39,9 @@ public:
     void drawMarkers(Mat &frame, const vector<vector<Point2f>> &markerCorners, const vector<int> &markerIds);
     Point2f find(int movingMarkerId);
     Pose2D findWithYaw(int markerId, const Mat& frame);
+    Pose2D findWithYawSima(int markerId, const Mat& frame);
     Point2f find(int markerId, const Mat& frame);
+    Point2f findSima(int simaId, const Mat& frame);
     Point2f findRecalculating(int markerId, const Mat& frame);
     void start(int movingMarkerId = 5);
     void estimateCameraPose();

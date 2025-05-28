@@ -50,8 +50,8 @@ void Visualiser::updateFrame() {
 
     if (sima1) sima1->drawElement(imgCopy);
     if (sima2) sima2->drawElement(imgCopy);
-    if (sima3) sima3->drawElement(imgCopy);
     if (sima4) sima4->drawElement(imgCopy);
+    if (simaDRUM) simaDRUM->drawElement(imgCopy);
 
     for (size_t i = 1; i < path.size(); i++) {
         Point2f p1 = path[i - 1];

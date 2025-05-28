@@ -13,11 +13,11 @@ Cluster::Cluster(vector<Point2f> border, Scalar color, ClusterPos position, floa
     center = (border[0] + border[2]) / 2;
 
     if (position == ClusterPos::VERTICAL) {
-        Point2f diff = Point2f(obstacleRadius + accessDistance + 50, 0);
+        Point2f diff = Point2f(obstacleRadius + accessDistance + 40, 0);
         accessPoints.push_back(center + diff);
         accessPoints.push_back(center - diff);
     } else {
-        Point2f diff = Point2f(0, obstacleRadius + accessDistance + 50);
+        Point2f diff = Point2f(0, obstacleRadius + accessDistance + 40);
         accessPoints.push_back(center + diff);
         accessPoints.push_back(center - diff);
     }
