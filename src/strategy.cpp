@@ -43,83 +43,83 @@ void Strategy::startAsyncPositionUpdates() {
     // Enemy processing thread
     enemyThread = thread(&Strategy::runEnemyProcessingLoop, this);
 
-    simaThread1 = thread([this]() {
-        while (running) {
-            if (!simasActive.load()) {
-                this_thread::sleep_for(chrono::milliseconds(100));
-                continue;
-            }
+    // simaThread1 = thread([this]() {
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(chrono::milliseconds(100));
+    //             continue;
+    //         }
 
-            Mat frameCopy;
-            {
-                lock_guard<mutex> lock(frameMutex);
-                frameCopy = sharedFrame.clone();
-            }
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
 
-            Pose2D pose = locator->findWithYawSima(sima1->getMarkerId(), frameCopy);
-            sima1->setPosition(pose.position);
-            sima1->setYaw(pose.yaw);
-            sima1->step(0);
+    //         Pose2D pose = locator->findWithYawSima(sima1->getMarkerId(), frameCopy);
+    //         sima1->setPosition(pose.position);
+    //         sima1->setYaw(pose.yaw);
+    //         sima1->step(0);
 
-            this_thread::sleep_for(chrono::milliseconds(1));
-        }
-    });
+    //         this_thread::sleep_for(chrono::milliseconds(1));
+    //     }
+    // });
 
-    simaThread2 = thread([this]() {
-        bool localActive = false;
-        while (running) {
-            if (!simasActive.load()) {
-                this_thread::sleep_for(chrono::milliseconds(100));
-                continue;
-            }
+    // simaThread2 = thread([this]() {
+    //     bool localActive = false;
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(chrono::milliseconds(100));
+    //             continue;
+    //         }
 
-            if (!localActive) {
-                this_thread::sleep_for(chrono::milliseconds(1500));
-                localActive = true;
-            }
+    //         if (!localActive) {
+    //             this_thread::sleep_for(chrono::milliseconds(1500));
+    //             localActive = true;
+    //         }
 
-            Mat frameCopy;
-            {
-                lock_guard<mutex> lock(frameMutex);
-                frameCopy = sharedFrame.clone();
-            }
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
 
-            Pose2D pose = locator->findWithYawSima(sima2->getMarkerId(), frameCopy);
-            sima2->setPosition(pose.position);
-            sima2->setYaw(pose.yaw);
-            sima2->step(1);
+    //         Pose2D pose = locator->findWithYawSima(sima2->getMarkerId(), frameCopy);
+    //         sima2->setPosition(pose.position);
+    //         sima2->setYaw(pose.yaw);
+    //         sima2->step(1);
 
-            this_thread::sleep_for(chrono::milliseconds(1));
-        }
-    });
+    //         this_thread::sleep_for(chrono::milliseconds(1));
+    //     }
+    // });
 
-    simaThread4 = thread([this]() {
-        bool localActive = false;
-        while (running) {
-            if (!simasActive.load()) {
-                this_thread::sleep_for(chrono::milliseconds(100));
-                continue;
-            }
+    // simaThread4 = thread([this]() {
+    //     bool localActive = false;
+    //     while (running) {
+    //         if (!simasActive.load()) {
+    //             this_thread::sleep_for(chrono::milliseconds(100));
+    //             continue;
+    //         }
 
-            if (!localActive) {
-                this_thread::sleep_for(chrono::milliseconds(3000));
-                localActive = true;
-            }
+    //         if (!localActive) {
+    //             this_thread::sleep_for(chrono::milliseconds(3000));
+    //             localActive = true;
+    //         }
 
-            Mat frameCopy;
-            {
-                lock_guard<mutex> lock(frameMutex);
-                frameCopy = sharedFrame.clone();
-            }
+    //         Mat frameCopy;
+    //         {
+    //             lock_guard<mutex> lock(frameMutex);
+    //             frameCopy = sharedFrame.clone();
+    //         }
 
-            Pose2D pose = locator->findWithYawSima(sima4->getMarkerId(), frameCopy);
-            sima4->setPosition(pose.position);
-            sima4->setYaw(pose.yaw);
-            sima4->step(3);
+    //         Pose2D pose = locator->findWithYawSima(sima4->getMarkerId(), frameCopy);
+    //         sima4->setPosition(pose.position);
+    //         sima4->setYaw(pose.yaw);
+    //         sima4->step(3);
 
-            this_thread::sleep_for(chrono::milliseconds(1));
-        }
-    });
+    //         this_thread::sleep_for(chrono::milliseconds(1));
+    //     }
+    // });
 
     // Visualiser thread
     visualiserThread = thread([this]() {
@@ -238,9 +238,9 @@ void Strategy::stopAsyncPositionUpdates() {
     if (robotThread.joinable()) robotThread.join();
     if (enemyThread.joinable()) enemyThread.join();
     if (visualiserThread.joinable()) visualiserThread.join();
-    if (simaThread1.joinable()) simaThread1.join();
-    if (simaThread2.joinable()) simaThread2.join();
-    if (simaThread4.joinable()) simaThread4.join();
+    // if (simaThread1.joinable()) simaThread1.join();
+    // if (simaThread2.joinable()) simaThread2.join();
+    // if (simaThread4.joinable()) simaThread4.join();
 
     cap.release();
 }
@@ -554,13 +554,13 @@ void Strategy::startTimer() {
 
             visualiser->setElapsedTime(seconds);
 
-            if (!simasOutDone && seconds >= 85) {
-                simaDRUM->robotClient->sendSimasCommand(4, 0x00, {static_cast<uint8_t>(simaDRUM->getMarkerId() > 60 ? 1 : 0)});
-                visualiser->addScore(55);
-                simasActive = true;
-                cout << "Simas are now active" << endl;
-                simasOutDone = true;
-            }
+            // if (!simasOutDone && seconds >= 85) {
+            //     simaDRUM->robotClient->sendSimasCommand(4, 0x00, {static_cast<uint8_t>(simaDRUM->getMarkerId() > 60 ? 1 : 0)});
+            //     visualiser->addScore(55);
+            //     simasActive = true;
+            //     cout << "Simas are now active" << endl;
+            //     simasOutDone = true;
+            // }
 
             if (seconds >= 99) {
                 // simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
@@ -568,19 +568,19 @@ void Strategy::startTimer() {
                 motionRunning = false;
 
                 robotClient->sendNewESPMoveCommand(0, 0, 0);
-                sima1->robotClient->sendSimasCommand(0, 0x0A, {1});
-                sima2->robotClient->sendSimasCommand(1, 0x0A, {1});
-                sima4->robotClient->sendSimasCommand(3, 0x0A, {1});
-                simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
-                sima1->robotClient->sendSimasCommand(0, 0x09, {0, 1, 0, 1});
-                sima2->robotClient->sendSimasCommand(1, 0x09, {0, 1, 0, 1});
-                sima4->robotClient->sendSimasCommand(3, 0x09, {0, 1, 0, 1});
-                simaDRUM->robotClient->sendSimasCommand(4, 0x09, {0, 1, 0, 1});
+                // sima1->robotClient->sendSimasCommand(0, 0x0A, {1});
+                // sima2->robotClient->sendSimasCommand(1, 0x0A, {1});
+                // sima4->robotClient->sendSimasCommand(3, 0x0A, {1});
+                // simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
+                // sima1->robotClient->sendSimasCommand(0, 0x09, {0, 1, 0, 1});
+                // sima2->robotClient->sendSimasCommand(1, 0x09, {0, 1, 0, 1});
+                // sima4->robotClient->sendSimasCommand(3, 0x09, {0, 1, 0, 1});
+                // simaDRUM->robotClient->sendSimasCommand(4, 0x09, {0, 1, 0, 1});
 
-                if (motionControlThread.joinable()) motionControlThread.join();
-                if (simaThread1.joinable()) simaThread1.join();
-                if (simaThread2.joinable()) simaThread2.join();
-                if (simaThread4.joinable()) simaThread4.join();
+                // if (motionControlThread.joinable()) motionControlThread.join();
+                // if (simaThread1.joinable()) simaThread1.join();
+                // if (simaThread2.joinable()) simaThread2.join();
+                // if (simaThread4.joinable()) simaThread4.join();
 
                 break;
             }
