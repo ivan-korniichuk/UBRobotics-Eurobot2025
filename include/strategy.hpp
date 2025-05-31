@@ -72,6 +72,8 @@ public:
     float maxAccDistance = 30;
     vector<Point2f> targetPath = {};
 
+    bool endMode = false;
+
     StrategyStatus currentStatus = StrategyStatus::IDLE;
     StrategyStatus previousStatus = StrategyStatus::IDLE;
 

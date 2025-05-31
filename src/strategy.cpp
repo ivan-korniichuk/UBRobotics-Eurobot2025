@@ -8,13 +8,25 @@ void Strategy::start_test() {
     startAsyncPositionUpdates();
     robotClient->registerWithRPi();
     robotClient->waitForCordSignal();  
-    startTimer();
+    startTimer(); 
     targetCluster1 = getHighestPriorityCluster();
     while (targetCluster1 != nullptr) {
         getCluster(StrategyStatus::COLLECTING_CLUSTER_1, StrategyStatus::COLLECTED_CLUSTER_1, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         // getCluster(StrategyStatus::COLLECTING_CLUSTER_2, StrategyStatus::COLLECTED_CLUSTER_2, StrategyStatus::ERROR_COLLECTING_CLUSTER);
         putCluster(StrategyStatus::CONSTRUCTION_GOING, StrategyStatus::CONSTRUCTION_FINISHED, StrategyStatus::ERROR_CONSTRUCTION);
     }
+
+    if (endMode) {
+        cout << "[Strategy] Heading to END POSITION..." << endl;
+        setTargetPath({robot->getPosition(), robot->endPosition});
+        while (getDistance(robot->getPosition(), robot->endPosition) > 50.0f && running) {
+            // let the controlRobotMovement thread do the driving
+            this_thread::sleep_for(chrono::milliseconds(50));
+        }
+        // stop movement
+        robotClient->sendNewESPMoveCommand(0, 0, 0);
+    }
+
     stopAsyncPositionUpdates();
 }
 
@@ -271,7 +283,7 @@ void Strategy::setTargetPath() {
 }
 
 void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
-    while (true) {
+    while (!endMode) {
         setStatus(continuingStatus);
         targetCluster = getHighestPriorityCluster();
 
@@ -305,18 +317,18 @@ void Strategy::getCluster(StrategyStatus continuingStatus, StrategyStatus comple
     aligningRobot.store(true);
     setTargetPath({});
     robotClient->sendNewESPMoveCommand(0,0,0);
-    this_thread::sleep_for(chrono::milliseconds(500));
+    this_thread::sleep_for(chrono::milliseconds(400));
     robotClient->sendSeek();
-    this_thread::sleep_for(chrono::milliseconds(8000));
+    this_thread::sleep_for(chrono::milliseconds(7000));
     robotClient->sendGrab(true);
-    this_thread::sleep_for(chrono::milliseconds(500));
+    this_thread::sleep_for(chrono::milliseconds(100));
     aligningRobot.store(false);
 
     setStatus(completeStatus);
 }
 
 void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus completeStatus, StrategyStatus errorStatus) {
-    while (true) {
+    while (!endMode) {
         setStatus(continuingStatus);
         // updatePositions();
         targetConstructionArea = getHighestPriorityConstructionArea();
@@ -350,7 +362,7 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
         }
     }
 
-    while (true) {
+    while (!endMode) {
         vector<Point2f> entryPath = {robot->getPosition(), targetConstructionArea->goal};
         setTargetPath(entryPath);
 
@@ -370,7 +382,7 @@ void Strategy::putCluster(StrategyStatus continuingStatus, StrategyStatus comple
     this_thread::sleep_for(chrono::milliseconds(1000));
     aligningRobot.store(false);
 
-    while (true) {
+    while (!endMode) {
         vector<Point2f> exitPath = {robot->getPosition(), targetConstructionArea->exit};
         setTargetPath(exitPath);
 
@@ -562,7 +574,12 @@ void Strategy::startTimer() {
             //     simasOutDone = true;
             // }
 
-            if (seconds >= 99) {
+            if (!endMode && seconds >= 85) {
+                endMode = true;
+                cout << "[Strategy] Entering END MODE after 85s" << endl;
+            }
+
+            if (seconds >= 98) {
                 // simaDRUM->robotClient->sendSimasCommand(4, 0x0A, {1});
                 cout << "Timer reached. Halting strategy." << endl;
                 motionRunning = false;
@@ -659,7 +676,7 @@ void Strategy::alignRobot(const Point2f& targetPos) {
     int tries = 0;
     cout << "Robot alignment angle to target: " << endl;
 
-    while (true) {
+    while (!endMode) {
         this_thread::sleep_for(chrono::milliseconds(50)); // just in case
         Point2f robotPos = robot->getPosition();
         float robotYaw = robot->getYaw();  // already adjusted by cameraAngle
@@ -676,14 +693,13 @@ void Strategy::alignRobot(const Point2f& targetPos) {
 
         // some calculations <3
         relativeYaw = targetAngle - robotYaw;
-        if (relativeYaw < -90) relativeYaw += 360;
+        while (relativeYaw > 180) relativeYaw -= 360;
+        while (relativeYaw < -180) relativeYaw += 360;
+        // if (relativeYaw < -90) relativeYaw += 360;
 
-        if (relativeYaw > 180) relativeYaw -= 360;
-        if (relativeYaw < -180) relativeYaw += 360;
+        // if (relativeYaw > 180) relativeYaw -= 360;
+        // if (relativeYaw < -180) relativeYaw += 360;
     
-        // Normalize to [-180, 180]
-        // if (relativeYaw < 90) relativeYaw = 180 - relativeYaw;
-        // if (relativeYaw > 270) relativeYaw = 180 - relativeYaw;
     
         cout << fixed << setprecision(2);
         cout << "Robot alignment angle to target: " << relativeYaw 
@@ -702,6 +718,6 @@ void Strategy::alignRobot(const Point2f& targetPos) {
     }
     cout << "stop rotating" << endl;
     robotClient->sendNewESPMoveCommand(0, 0, 0);
-    this_thread::sleep_for(chrono::milliseconds(1000));
+    this_thread::sleep_for(chrono::milliseconds(600));
     aligningRobot.store(false);
 }

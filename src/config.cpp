@@ -175,8 +175,8 @@ Locator locator;
 RobotClient robotClient(SERVER_IP, SERVER_PORT); 
 
 Enemy enemy(2, {1500,1750}, Scalar(0,0,255), ENEMY_SIZE, ROBOT_RADIUS);
-Robot robotY(7, {2650,1750}, Scalar(0,255,255), ROBOT_SIZE, ROBOT_RADIUS);
-Robot robotB(7, {350,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
+Robot robotY(7, {2650,1750}, {2650,1750}, Scalar(0,255,255), ROBOT_SIZE, ROBOT_RADIUS);
+Robot robotB(7, {350,1750}, {350,1750}, Scalar(255,120,150), ROBOT_SIZE, ROBOT_RADIUS);
 
 Sima simaY71(71, {2900, 1925}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "71");
 Sima simaY72(72, {2900, 1825}, Scalar(255, 255, 0), SIMA_SIZE, SIMA_RADIUS, "72");
@@ -378,9 +378,9 @@ void setUpBlue(int ourMaker, int theirMarker) {
   simaB54.robotClient = &robotClient;
   simaBDRUM.robotClient = &robotClient;
 
-  simaB51.setWaypoints({{250, 1625}, {650, 1550}, {1900, 1450}});
-  simaB52.setWaypoints({{250, 1625}, {650, 1550}, {1500, 1450}});
-  simaB54.setWaypoints({{250, 1625}, {650, 1550}, {1100, 1450}});
+  simaB51.setWaypoints({{250, 1600}, {650, 1250}, {1900, 1450}});
+  simaB52.setWaypoints({{250, 1600}, {650, 1250}, {1500, 1450}});
+  simaB54.setWaypoints({{250, 1600}, {650, 1250}, {1100, 1450}});
 
   navigator.insertElement(baseY);
 

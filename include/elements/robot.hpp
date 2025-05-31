@@ -24,7 +24,9 @@ private:
 public:
     Locator* locator;
 
-    Robot(int markerId, Point2f position, Scalar color, float size, float obstacleRadius = 0, string id = "Robot");
+    Robot(int markerId, Point2f position, Point2f endPosition, Scalar color, float size, float obstacleRadius = 0, string id = "Robot");
+
+    Point2f endPosition;
 
     void drawElement(Mat& image) override;
     void setPosition(Point2f position);
