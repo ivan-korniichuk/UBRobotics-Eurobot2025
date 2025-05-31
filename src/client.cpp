@@ -134,7 +134,6 @@ void RobotClient::sendCommandToESP(uint8_t espID, uint8_t cmdID, const vector<ui
 }
 
 void RobotClient::sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn) {
-  return; // TODO: remove this line
   vector<uint8_t> args;
 
   auto append16 = [&](int16_t val) {
@@ -147,6 +146,22 @@ void RobotClient::sendNewESPMoveCommand(int16_t velX, int16_t velY, int16_t turn
   append16(turn);
 
   sendCommandToESP(0x10, 1, args);
+}
+
+void RobotClient::sendGrab(bool grab) {
+  vector<uint8_t> args;
+
+  if (grab) {
+    sendCommandToESP(0x11, 1, args);
+  } else {
+    sendCommandToESP(0x11, 2, args);
+  }
+}
+
+void RobotClient::sendSeek() {
+  vector<uint8_t> args;
+
+  sendCommandToESP(0x10, 2, args);
 }
 
 void RobotClient::registerWithRPi() {
@@ -217,4 +232,20 @@ void RobotClient::waitForCordSignal(int listenPort) {
 
   cout << "[Client] Cord pull confirmed. Proceeding.\n";
   close(serverSock);
+}
+
+void RobotClient::sendSimasCommand(uint8_t targetID, uint8_t command, const vector<uint8_t>& payload) {
+  vector<uint8_t> packet;
+
+  packet.push_back(0x12);
+  packet.push_back(command);
+  packet.push_back(targetID);
+
+  for (uint8_t b : payload) {
+    packet.push_back(b);       // data[1] to data[7] (max 7 bytes)
+  }
+
+  while (packet.size() < 10) packet.push_back(0); // pad to 10 bytes
+
+  sendToServer(packet);
 }

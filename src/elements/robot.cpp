@@ -4,7 +4,7 @@
 
 using namespace robotVars;
 
-Robot::Robot(int markerId, Point2f position, Scalar color, float size, float obstacleRadius, string id) {
+Robot::Robot(int markerId, Point2f position, Point2f endPosition, Scalar color, float size, float obstacleRadius, string id) {
     vector<Point2f> square = {{0,0},{0,1},{1,1},{1,0}};
     dimensions = scalePolygon(square, size);
 
@@ -16,6 +16,8 @@ Robot::Robot(int markerId, Point2f position, Scalar color, float size, float obs
 
     this->position = position;
     this->markerId = markerId;
+
+    this->endPosition = endPosition;
 
     setAttributes(border, color, obstacleRadius, id);
 }
@@ -70,11 +72,6 @@ void Robot::setPosition(Point2f position) {
 Point2f Robot::getPosition() const {
     lock_guard<mutex> lock(posMutex);
     return position;
-}
-
-void Robot::update() {
-    Point2f newPosition = locator->find(markerId);
-    setPosition(newPosition);
 }
 
 int Robot::getMarkerId() const {

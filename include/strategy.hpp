@@ -4,6 +4,7 @@
 #include "elements/construction_area.hpp"
 #include "elements/robot.hpp"
 #include "elements/enemy.hpp"
+#include "elements/sima.hpp"
 #include "visualiser.hpp"
 #include "navigator.hpp"
 #include "client.hpp"
@@ -58,13 +59,20 @@ public:
     Enemy* enemy;
     Robot* robot;
 
+    Sima* sima1;
+    Sima* sima2;
+    Sima* sima4;
+    Sima* simaDRUM;
+
     Visualiser* visualiser;
     Navigator* navigator;
     Locator* locator;
 
     bool flagDeployed = false;
-    float maxAccDistance = 50;
+    float maxAccDistance = 30;
     vector<Point2f> targetPath = {};
+
+    bool endMode = false;
 
     StrategyStatus currentStatus = StrategyStatus::IDLE;
     StrategyStatus previousStatus = StrategyStatus::IDLE;
@@ -99,6 +107,7 @@ private:
     thread motionControlThread;
     atomic<bool> motionRunning;
     mutex frameMutex;
+    
     thread robotThread;
     thread enemyThread;
     atomic<bool> frameAvailable;
@@ -106,6 +115,12 @@ private:
 
     atomic<bool> robotFrameReady{false};
     atomic<bool> enemyFrameReady{false};
+
+    thread simaThread1;
+    thread simaThread2;
+    thread simaThread4;
+
+    atomic<bool> simasActive{false};
 
     void controlRobotMovement();
     void alignRobot(const Point2f& targetPosition);

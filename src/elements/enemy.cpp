@@ -36,11 +36,6 @@ void Enemy::setPosition(Point2f position) {
     updateObstacle(border);
 }
 
-void Enemy::update() {
-    Point2f newPosition = locator->find(markerId);
-    setPosition(newPosition);
-}
-
 int Enemy::getMarkerId() const {
     return markerId;
 }

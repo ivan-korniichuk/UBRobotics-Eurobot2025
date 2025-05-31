@@ -12,7 +12,7 @@ HOST = '0.0.0.0'
 PORT = 5005
 
 # GPIO pull cord button (connected to GPIO17)
-button = Button(17, pull_up=True)
+button = Button(4, pull_up=True)
 
 # Laptop registration
 registered_laptop_ip = None

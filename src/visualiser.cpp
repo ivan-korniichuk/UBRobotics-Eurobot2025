@@ -48,6 +48,11 @@ void Visualiser::updateFrame() {
     construction5IM->drawElement(imgCopy);
     construction6IM->drawElement(imgCopy);
 
+    if (sima1) sima1->drawElement(imgCopy);
+    if (sima2) sima2->drawElement(imgCopy);
+    if (sima4) sima4->drawElement(imgCopy);
+    if (simaDRUM) simaDRUM->drawElement(imgCopy);
+
     for (size_t i = 1; i < path.size(); i++) {
         Point2f p1 = path[i - 1];
         Point2f p2 = path[i];

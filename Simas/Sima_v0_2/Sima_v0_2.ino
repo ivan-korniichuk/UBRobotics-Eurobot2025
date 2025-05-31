@@ -9,15 +9,17 @@ Motor_control wheelL, wheelR, funElement;
 #define _channel 0
 byte localMAC[6];
 bool MAC_found, MAC_isnz = false;
+bool teams_isBlue = false;
 uint8_t controller_Num = 255;
 esp_now_peer_info_t peerInfo;
 
 uint32_t t_lastPacket = 0,
-         t_lastFunElement = 0;
+         t_lastFunElement = 2000;
 
 typedef struct TargetCommands{
   uint8_t cmd;
-  uint8_t data[8];
+  uint8_t targetID;
+  uint8_t data[6];
 } targetCommands;
 targetCommands dataIn, dataOut;
 
@@ -90,7 +92,7 @@ void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status){
 void onDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len){
   //Serial.println("Packet Recieved");
   memcpy(&dataIn, incomingData, sizeof(dataIn));
-  t_lastPacket = millis() + 3000;
+  t_lastPacket = millis() + 60;
   Serial.printf("[%2d] | CMD: 0x%2X 0x%2.2X%2.2X%2.2X", controller_Num, dataIn.cmd, dataIn.data[0], dataIn.data[1], dataIn.data[2]);
   Serial.printf("%2.2X 0x%2.2X%2.2X%2.2X%2.2X  %X\n", dataIn.data[3], dataIn.data[4], dataIn.data[5], dataIn.data[6], dataIn.data[7], millis());
   Wifi_Process();
@@ -134,6 +136,7 @@ void setup() {
   wheelL.begin(17, 18);
   wheelR.begin(34, 33);
   funElement.begin(4, 5); //litte arm go bruuuu
+  funElement.speed(255, 1);
   Wifi_begin();
   //WS2812B on pin48
 }
@@ -146,17 +149,22 @@ void loop() {
   }
 
   if (millis() > t_lastFunElement){
-    if (funElementUp){
-      funElement.speed(64, 1);
-    } else {
-      if (funElementToggle){
-        funElement.speed(64, 0);
+    if(funElementToggle){
+      if (funElementUp){
+        funElement.speed(255, 0);
       } else {
-        funElement.stop();
+        funElement.speed(192, 1);
+      }
+      funElementUp = !funElementUp;
+    } else {
+      if (funElementUp){
+        funElement.hold();
+      } else {
+        funElement.speed(255, 1);
+        funElementUp = !funElementUp;
       }
     }
-    funElementUp = !funElementUp;
-    t_lastFunElement = millis() + 500;
+    t_lastFunElement = millis() + 600;
   }
 
   //Serial.println(controller_Num);

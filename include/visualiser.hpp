@@ -4,6 +4,7 @@
 #include "elements/cluster.hpp"
 #include "elements/robot.hpp"
 #include "elements/enemy.hpp"
+#include "elements/sima.hpp"
 #include "elements/construction_area.hpp"
 #include <opencv2/opencv.hpp>
 #include <mutex>
@@ -55,6 +56,11 @@ public:
     Element* constructionB2;
     Element* constructionB3Big;
     Element* constructionB4Big;
+
+    Sima* sima1;
+    Sima* sima2;
+    Sima* sima4;
+    Sima* simaDRUM;
 
     vector<Point2f> path = {};
 

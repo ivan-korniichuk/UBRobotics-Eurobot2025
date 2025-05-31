@@ -5,6 +5,7 @@
 #include "elements/construction_area.hpp"
 #include "elements/robot.hpp"
 #include "elements/enemy.hpp"
+#include "elements/sima.hpp"
 #include "navigator.hpp"
 #include "locator.hpp"
 #include "visualiser.hpp"
@@ -18,6 +19,7 @@ namespace robotVars {
 namespace locatorVars {
   extern const float stationaryMarkerSize;
   extern const float movingMarker;
+  extern const float simaMarker;
   extern const vector<Point3f> realMPoints;
 }
 
@@ -50,6 +52,10 @@ extern ConstructionArea constructionAreaY4, constructionAreaY5, constructionArea
 
 extern ConstructionArea constructionAreaB1, constructionAreaB2, constructionAreaB3;
 extern ConstructionArea constructionAreaB4, constructionAreaB5, constructionAreaB6;
+
+// Simas
+extern Sima simaY71, simaY72, simaY74, simaYDRUM;
+extern Sima simaB51, simaB52, simaB54, simaBDRUM;
 
 // Core system components
 extern Locator locator;
